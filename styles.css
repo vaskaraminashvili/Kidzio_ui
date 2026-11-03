@@ -83,7 +83,7 @@ h1, h2, h3, .font-head { font-family: var(--font-head); line-height: 1.15; }
 .device {
   position: relative;
   width: 100%;
-  min-height: 100dvh;
+  height: 100dvh;
   background: var(--night);
   overflow: hidden;
   isolation: isolate;
@@ -92,7 +92,6 @@ h1, h2, h3, .font-head { font-family: var(--font-head); line-height: 1.15; }
 @media (min-width: 480px) {
   .device {
     width: 400px;
-    min-height: 0;
     height: min(860px, calc(100dvh - 48px));
     border-radius: 48px;
     border: 10px solid var(--night-deep);
@@ -342,27 +341,338 @@ h1, h2, h3, .font-head { font-family: var(--font-head); line-height: 1.15; }
   min-height: 56px;
 }
 
-/* ---------- 7. Screen transition (used from step 2) --------------------- */
-.screen-enter { transition: opacity var(--t-screen) ease, transform var(--t-screen) var(--ease-soft); }
-.screen-enter-start { opacity: 0; transform: translateX(24px); }
-.screen-enter-end { opacity: 1; transform: translateX(0); }
+/* ---------- 7. Screens + transitions ----------------------------------- */
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+}
+.screen-body {
+  flex: 1; min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 20px 8px;
+}
+.screen-foot { padding: 12px 20px 26px; display: grid; gap: 12px; }
 
-/* ---------- 8. Reduced motion ------------------------------------------ */
+.screen-anim     { transition: opacity var(--t-screen) ease, transform var(--t-screen) var(--ease-soft); }
+.screen-anim-out { transition: opacity 180ms ease, transform 180ms ease-in; }
+.screen-from { opacity: 0; transform: translateX(28px); }
+.screen-to   { opacity: 1; transform: none; }
+.screen-out  { opacity: 0; transform: translateX(-28px); }
+
+/* each new question slides in */
+.q-in { animation: q-in var(--t-screen) var(--ease-soft) both; }
+@keyframes q-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+
+[data-focus]:focus { outline: none; }
+[data-focus]:focus-visible { outline: 4px solid var(--moon); outline-offset: 4px; }
+
+/* ---------- 8. Home ----------------------------------------------------- */
+.home-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.home-hero .mascot { width: 112px; flex: none; margin-bottom: -6px; }
+
+.streak {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px;
+  border-radius: 22px;
+  background: var(--night-raised);
+  border: 2px dashed var(--night-line);
+}
+.streak-days { display: flex; gap: 4px; }
+.streak-day { display: grid; justify-items: center; gap: 2px; font-size: .8rem; font-weight: 800; color: rgba(255, 244, 214, .7); }
+.streak-day svg { width: 22px; height: 22px; }
+.streak-day.is-today { color: var(--moon); }
+
+.subject-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.subject-tile {
+  --accent: var(--rocket); --accent-deep: var(--rocket-deep);
+  position: relative;
+  display: grid; justify-items: start; gap: 6px;
+  min-height: 150px;
+  padding: 14px 16px 16px;
+  border: 0;
+  border-radius: var(--r-card);
+  background: var(--cream);
+  color: var(--ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: 0 6px 0 var(--night-deep);
+  transition: transform var(--t-press) ease-out, box-shadow var(--t-press) ease-out;
+}
+.subject-tile:active { transform: translateY(6px); box-shadow: 0 0 0 var(--night-deep); }
+.subject-tile[data-accent="moon"] { --accent: var(--moon); --accent-deep: var(--moon-deep); }
+.subject-tile[data-accent="mint"] { --accent: var(--mint); --accent-deep: var(--mint-deep); }
+.subject-tile[data-accent="pink"] { --accent: var(--pink); --accent-deep: var(--pink-deep); }
+.subject-tile:focus-visible { border-radius: var(--r-card); }
+
+.subject-planet { width: 76px; height: 62px; }
+.subject-planet svg { width: 100%; height: 100%; overflow: visible; }
+.subject-tile .ring { transform-origin: 38px 31px; transition: transform 500ms var(--ease-soft); }
+.subject-tile:hover .ring { transform: rotate(-14deg); }
+.subject-name { font-family: var(--font-head); font-weight: 800; font-size: 1.375rem; line-height: 1; }
+.subject-meta { font-size: 1rem; color: var(--ink-soft); font-weight: 700; }
+
+/* ---------- 9. Quiz chrome: rocket progress ----------------------------- */
+.quiz-top { display: flex; align-items: center; gap: 12px; padding: 18px 20px 4px; }
+
+.flight { position: relative; flex: 1; height: 56px; }
+.flight-track {
+  position: absolute; left: 22px; right: 22px; top: 50%;
+  height: 0; border-top: 3px dashed var(--night-line);
+}
+.flight-trail {
+  position: absolute; left: 22px; top: 50%;
+  height: 6px; margin-top: -1.5px;
+  border-radius: 6px;
+  background: var(--star-white);
+  transition: width 700ms var(--ease-soft);
+}
+.flight-end { position: absolute; top: 50%; width: 36px; height: 36px; margin-top: -18px; }
+.flight-end.earth { left: 0; }
+.flight-end.moon  { right: 0; }
+.flight-rocket {
+  position: absolute; top: 50%; width: 40px; height: 40px; margin: -22px 0 0 -20px;
+  transition: left 700ms var(--ease-bounce);
+}
+.flight-rocket svg { width: 100%; height: 100%; transform: rotate(90deg); }
+.flame { transform-box: fill-box; transform-origin: top center; animation: flicker 300ms ease-in-out infinite alternate; }
+@keyframes flicker { from { transform: scaleY(.8); } to { transform: scaleY(1.15); } }
+
+.q-meta { padding: 2px 20px 0; font-family: var(--font-head); font-weight: 700; font-size: 1.05rem; color: rgba(255, 244, 214, .8); }
+.q-prompt { font-family: var(--font-head); font-weight: 800; font-size: 1.75rem; line-height: 1.15; color: var(--star-white); text-wrap: balance; }
+
+/* Feedback strip with mascot */
+.feedback {
+  display: flex; align-items: center; gap: 10px;
+  border-radius: 22px;
+  padding: 8px 14px 8px 6px;
+  background: var(--night-raised);
+  border: 2px dashed var(--night-line);
+  color: var(--star-white);
+  min-height: 76px;
+  font-weight: 700;
+}
+.feedback .mascot { width: 56px; flex: none; }
+
+/* ---------- 10. Mascot (Zip) ------------------------------------------- */
+.mascot svg { width: 100%; height: auto; display: block; overflow: visible; }
+.mascot .m-arm, .mascot .m-head { transition: transform 360ms var(--ease-bounce); }
+.mascot .m-arm-l { transform-origin: 34px 88px; transform: rotate(14deg); }
+.mascot .m-arm-r { transform-origin: 86px 88px; transform: rotate(-14deg); }
+.mascot .m-head  { transform-origin: 60px 80px; }
+
+.mascot.is-wave .m-arm-r { animation: wave 1.2s ease-in-out 3; }
+@keyframes wave {
+  0%, 100% { transform: rotate(-14deg); }
+  25%, 75% { transform: rotate(-150deg); }
+  50%      { transform: rotate(-115deg); }
+}
+
+.mascot.is-happy .m-arm-l { transform: rotate(150deg); }
+.mascot.is-happy .m-arm-r { transform: rotate(-150deg); }
+.mascot.is-happy svg { animation: hop 520ms var(--ease-bounce) 2; }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-10px); } }
+
+.mascot.is-shrug .m-arm-l { transform: rotate(72deg); }
+.mascot.is-shrug .m-arm-r { transform: rotate(-72deg); }
+.mascot.is-shrug .m-head  { transform: rotate(-9deg); }
+
+/* ---------- 11. Choice variants (picture + true/false) ----------------- */
+.opt-icon { width: 52px; height: 52px; flex: none; }
+.answer-grid.is-picture .answer-card { min-height: 122px; }
+
+.answer-grid.is-tf .answer-card { min-height: 164px; }
+.answer-grid.is-tf .card-face { align-items: center; justify-content: center; text-align: center; }
+.answer-grid.is-tf .opt-icon { width: 64px; height: 64px; }
+.answer-grid.is-tf .answer-text { font-size: 1.75rem; }
+.answer-card[data-accent="mint"] .opt-icon { color: var(--mint); }
+.answer-card[data-accent="pink"] .opt-icon { color: var(--pink); }
+
+.statement {
+  padding: 22px 20px;
+  border-radius: var(--r-card);
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.75rem;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 6px 0 var(--night-deep);
+}
+
+.picture-frame {
+  position: relative;
+  display: grid; place-items: center;
+  height: 176px;
+  border-radius: 32px;
+  background: var(--cream);
+  box-shadow: 0 6px 0 var(--night-deep);
+  overflow: hidden;
+}
+.picture-frame::before { /* a little drawn horizon, so it reads as a picture */
+  content: ""; position: absolute; left: -10%; right: -10%; bottom: -60px; height: 100px;
+  border-radius: 50%; background: var(--cream-deep);
+}
+.picture-frame svg { position: relative; width: 136px; height: 136px; transition: filter 600ms ease, opacity 600ms ease; }
+.picture-frame.is-shadow svg { filter: brightness(0); opacity: .82; }
+
+/* ---------- 12. Fill the gap ------------------------------------------- */
+.sentence {
+  padding: 22px 18px;
+  border-radius: var(--r-card);
+  background: var(--cream);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 2.3;
+  box-shadow: 0 6px 0 var(--night-deep);
+}
+.gap {
+  display: inline-flex; align-items: center; justify-content: center;
+  vertical-align: middle;
+  min-width: 132px; height: 54px;
+  margin: 0 4px;
+  padding: 0 6px;
+  border: 3px dashed var(--ink-soft);
+  border-radius: 16px;
+  background: transparent;
+  font: inherit; color: inherit;
+  cursor: pointer;
+}
+.gap.is-filled { border-color: transparent; padding: 0; }
+.gap-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 50px; padding: 0 14px;
+  border-radius: 14px;
+  background: var(--moon);
+  color: var(--ink);
+  font-family: var(--font-head);
+  font-size: 1.375rem;
+  box-shadow: 0 4px 0 var(--moon-deep);
+  line-height: 1;
+}
+.gap-chip.is-right { background: var(--mint); box-shadow: 0 4px 0 var(--mint-deep); }
+.gap-chip.is-miss  { background: var(--pink); box-shadow: 0 4px 0 var(--pink-deep); animation: wobble 620ms ease-in-out both; }
+
+.word-tray { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.word-tile {
+  min-height: 58px; padding: 0 22px;
+  border: 0; border-radius: 18px;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-head); font-weight: 800; font-size: 1.375rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--moon-deep);
+  transition: transform var(--t-press) ease-out, box-shadow var(--t-press) ease-out;
+}
+.word-tile:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 var(--moon-deep); }
+.word-tile.is-used {
+  background: transparent; color: transparent;
+  box-shadow: none;
+  outline: 3px dashed var(--night-line); outline-offset: -3px;
+  cursor: default;
+}
+.word-tile:disabled:not(.is-used) {
+  background: var(--night-raised); color: rgba(255, 244, 214, .7);
+  box-shadow: none; outline: 2px solid var(--night-line); outline-offset: -2px; cursor: default;
+}
+
+/* ---------- 13. Match pairs -------------------------------------------- */
+.match-board {
+  position: relative;
+  display: grid; grid-template-columns: 1fr 1fr; column-gap: 44px;
+}
+.match-col { display: grid; gap: 12px; }
+.match-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 1; }
+.match-lines path {
+  fill: none; stroke: var(--mint); stroke-width: 5; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: draw 420ms var(--ease-soft) forwards;
+}
+.match-lines circle { fill: var(--mint); stroke: var(--night); stroke-width: 3; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+.match-item {
+  min-height: 64px; padding: 8px 12px;
+  border: var(--outline) solid var(--cream);
+  border-radius: 20px;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-head); font-weight: 800; font-size: 1.375rem; line-height: 1.1;
+  cursor: pointer;
+  box-shadow: 0 5px 0 var(--night-deep);
+  transition: transform 200ms var(--ease-bounce), box-shadow 200ms ease, background-color 200ms ease, border-color 160ms ease;
+}
+.match-item.is-sel { border-color: var(--ink); transform: translateY(-4px); box-shadow: 0 9px 0 var(--night-deep); }
+.match-item.is-matched { background: var(--mint); border-color: var(--mint); box-shadow: 0 5px 0 var(--mint-deep); cursor: default; }
+.match-item.is-wrong { animation: wobble 600ms ease-in-out; }
+
+/* ---------- 14. Rocket blast (correct answer) -------------------------- */
+.blast { position: absolute; inset: 0; z-index: 20; pointer-events: none; overflow: hidden; }
+.blast-rocket {
+  position: absolute; left: 0; top: 0; width: 96px; height: 96px;
+  animation: blast-off 1100ms cubic-bezier(.5, 0, .75, .5) forwards;
+}
+.blast-rocket svg { width: 100%; height: 100%; transform: rotate(40deg); }
+@keyframes blast-off {
+  from { transform: translate(-120px, 760px); }
+  to   { transform: translate(460px, -160px); }
+}
+.blast-star {
+  position: absolute; width: 26px; height: 26px; margin: -13px;
+  color: var(--moon); opacity: 0;
+  animation: trail 700ms var(--ease-soft) both;
+}
+.blast-star svg { width: 100%; height: 100%; }
+@keyframes trail {
+  0%   { opacity: 0; transform: scale(.2) rotate(0); }
+  30%  { opacity: 1; transform: scale(1.15) rotate(40deg); }
+  100% { opacity: 0; transform: scale(.6) rotate(110deg); }
+}
+
+/* ---------- 15. Results ------------------------------------------------ */
+.result-stars { display: flex; justify-content: center; align-items: flex-end; gap: 6px; }
+.result-star { width: 88px; height: 88px; }
+.result-star:nth-child(2) { width: 108px; height: 108px; margin-bottom: 14px; }
+.result-star svg { width: 100%; height: 100%; }
+.result-star.is-on { animation: star-pop 520ms var(--ease-bounce) both; }
+.result-star:nth-child(1).is-on { animation-delay: 250ms; }
+.result-star:nth-child(2).is-on { animation-delay: 550ms; }
+.result-star:nth-child(3).is-on { animation-delay: 850ms; }
+@keyframes star-pop { from { transform: scale(0) rotate(-40deg); } to { transform: scale(1) rotate(0); } }
+.result-star.is-off svg { opacity: .9; }
+
+.result-card {
+  display: grid; justify-items: center; gap: 4px;
+  padding: 18px 18px 20px;
+  border-radius: var(--r-card);
+  background: var(--cream);
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 0 6px 0 var(--night-deep);
+}
+.result-card .mascot { width: 116px; margin-top: -70px; }
+.result-score { font-family: var(--font-head); font-weight: 800; font-size: 2.25rem; line-height: 1; }
+
+/* ---------- 16. Reduced motion ----------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
   }
-  .twinkle, .burst { animation: none !important; display: none; }
+  .twinkle, .burst, .blast, .flame { animation: none !important; }
+  .burst, .blast { display: none; }
   .answer-card.is-selected { animation: none; transform: translateY(-6px); }
-  .answer-card.is-wobbling { animation: none; }
+  .answer-card.is-wobbling, .match-item.is-wrong, .gap-chip.is-miss { animation: none; }
+  .match-lines path { animation: none; stroke-dashoffset: 0; }
+  .mascot.is-happy svg, .mascot.is-wave .m-arm-r { animation: none; }
   /* Swap faces instead of spinning in 3D */
   .answer-card.is-flipped .card-inner { transform: none; }
   .card-back { transform: none; opacity: 0; }
   .answer-card.is-flipped .card-front { opacity: 0; }
   .answer-card.is-flipped .card-back { opacity: 1; }
 }
-
-/* ---------- 9. Review sheet (step 1 only, outside the phone) ------------ */
-.swatch { width: 100%; aspect-ratio: 1.4; border-radius: 18px; border: 2px solid var(--night-line); }

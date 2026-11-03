@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#141B3C">
-  <title>Star Hop</title>
+  <title>Kidzio</title>
+  <meta name="description" content="A friendly space quiz for kids aged 7 to 12.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,19 +41,132 @@
 </head>
 
 <body class="font-body">
-  <div class="min-h-[100dvh] flex flex-col items-center gap-10 min-[480px]:py-6 lg:flex-row lg:justify-center lg:items-center lg:gap-16">
 
-    <!-- ===================== PHONE ===================== -->
-    <main class="device flex flex-col" x-data="mcQuestion">
+  <!-- ===================== Icon sprite ===================== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <path id="spark" d="M0,-10 C1.2,-2.4 2.6,-1.1 10,0 C2.4,1.4 1.3,2.2 0,10.5 C-1.6,2.6 -2.2,1.2 -9.5,0 C-2.4,-1.3 -1.4,-2.1 0,-10Z"/>
+      <clipPath id="sat-front"><rect x="-10" y="34" width="84" height="40" transform="rotate(-15 32 34)"/></clipPath>
+
+      <symbol id="i-star" viewBox="0 0 64 64">
+        <path d="M32 6 39.6 23.5 58.5 24.9 44 37.2 48.4 55.6 32 45.6 15.6 55.6 20 37.2 5.5 24.9 24.4 23.5Z" fill="#FFCF4A" stroke="#1E2346" stroke-width="3" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-star-empty" viewBox="0 0 64 64">
+        <path d="M32 6 39.6 23.5 58.5 24.9 44 37.2 48.4 55.6 32 45.6 15.6 55.6 20 37.2 5.5 24.9 24.4 23.5Z" fill="#1F2853" stroke="#4A5795" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6 5"/>
+      </symbol>
+
+      <symbol id="i-saturn" viewBox="0 0 64 64">
+        <ellipse cx="32" cy="34" rx="29" ry="9" fill="none" stroke="#1E2346" stroke-width="3" transform="rotate(-15 32 34)"/>
+        <circle cx="32" cy="32" r="16" fill="#FFCF4A" stroke="#1E2346" stroke-width="3"/>
+        <path d="M18.5 27q13.5 5 27 0" fill="none" stroke="#C9941A" stroke-width="3" stroke-linecap="round"/>
+        <ellipse cx="32" cy="34" rx="29" ry="9" fill="none" stroke="#1E2346" stroke-width="3" transform="rotate(-15 32 34)" clip-path="url(#sat-front)"/>
+      </symbol>
+      <symbol id="i-moon" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="22" fill="#EDE6D6" stroke="#1E2346" stroke-width="3"/>
+        <circle cx="24" cy="26" r="5.5" fill="#D3CAB5"/>
+        <circle cx="40" cy="38" r="4" fill="#D3CAB5"/>
+        <circle cx="37" cy="21" r="2.6" fill="#D3CAB5"/>
+        <circle cx="26" cy="42" r="2.4" fill="#D3CAB5"/>
+      </symbol>
+      <symbol id="i-sun" viewBox="0 0 64 64">
+        <g stroke="#F08A2C" stroke-width="4.5" stroke-linecap="round">
+          <path d="M32 4v7M32 53v7M4 32h7M53 32h7M12.2 12.2l5 5M46.8 46.8l5 5M12.2 51.8l5-5M46.8 17.2l5-5"/>
+        </g>
+        <circle cx="32" cy="32" r="16" fill="#FFC23D" stroke="#1E2346" stroke-width="3"/>
+        <circle cx="26.5" cy="30" r="2" fill="#1E2346"/><circle cx="37.5" cy="30" r="2" fill="#1E2346"/>
+        <path d="M26 36q6 5 12 0" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round"/>
+      </symbol>
+      <symbol id="i-comet" viewBox="0 0 64 64">
+        <g stroke-linecap="round" stroke-width="5" fill="none">
+          <path d="M6 42 30 28" stroke="#FFCF4A"/>
+          <path d="M10 56 32 34" stroke="#FF9A3C"/>
+          <path d="M24 60 38 40" stroke="#FFCF4A"/>
+        </g>
+        <circle cx="42" cy="24" r="12" fill="#FFF4D6" stroke="#1E2346" stroke-width="3"/>
+        <circle cx="38" cy="21" r="2.6" fill="#E2D6BC"/>
+      </symbol>
+      <symbol id="i-volcano" viewBox="0 0 64 64">
+        <g fill="#CFC6B5" stroke="#1E2346" stroke-width="2.5">
+          <circle cx="25" cy="13" r="6"/><circle cx="34" cy="8" r="7"/><circle cx="42" cy="14" r="5"/>
+        </g>
+        <path d="M5 58 24 22H40L59 58Z" fill="#A86B4A" stroke="#1E2346" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M24 22H40L37.5 31Q35 26 32.5 33Q29.5 27 27 31Z" fill="#FF7A3D" stroke="#1E2346" stroke-width="2.5" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-island" viewBox="0 0 64 64">
+        <path d="M2 50q7.5-5 15 0t15 0 15 0 15 0V62H2Z" fill="#8FD6E8" stroke="#1E2346" stroke-width="3" stroke-linejoin="round"/>
+        <ellipse cx="30" cy="48" rx="18" ry="7" fill="#F3D9A0" stroke="#1E2346" stroke-width="3"/>
+        <path d="M30 45q-2-14 5-26" fill="none" stroke="#8C5A3C" stroke-width="4.5" stroke-linecap="round"/>
+        <g fill="#5ED6B0" stroke="#1E2346" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M35 19q-12-7-21 2 11-3 21-2Z"/><path d="M35 19q12-7 21 2-11-3-21-2Z"/><path d="M35 19q-4-12 5-16-3 8-5 16Z"/>
+        </g>
+      </symbol>
+      <symbol id="i-desert" viewBox="0 0 64 64">
+        <circle cx="50" cy="14" r="7" fill="#FFC23D" stroke="#1E2346" stroke-width="2.5"/>
+        <g fill="#2C9677" stroke="#1E2346" stroke-width="3" stroke-linejoin="round">
+          <rect x="27" y="16" width="11" height="36" rx="5.5"/>
+          <path d="M27 38h-6a4 4 0 0 1-4-4v-8a3 3 0 0 1 6 0v6h4"/>
+          <path d="M38 32h5v-6a3 3 0 0 1 6 0v6a5 5 0 0 1-5 5h-6"/>
+        </g>
+        <path d="M2 54q18-12 34-2t26-4V62H2Z" fill="#F3D9A0" stroke="#1E2346" stroke-width="3" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-glacier" viewBox="0 0 64 64">
+        <path d="M9 50 20 22l9 7 9-17 17 38Z" fill="#E4F5FA" stroke="#1E2346" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M38 12 43 50H55Z" fill="#BFE3EE"/>
+        <path d="M2 50q7.5-5 15 0t15 0 15 0 15 0V62H2Z" fill="#8FD6E8" stroke="#1E2346" stroke-width="3" stroke-linejoin="round"/>
+      </symbol>
+      <symbol id="i-rocket" viewBox="0 0 64 64">
+        <path class="flame" d="M26 47q6 17 12 0Z" fill="#FFCF4A" stroke="#1E2346" stroke-width="2.5" stroke-linejoin="round"/>
+        <g stroke="#1E2346" stroke-width="3" stroke-linejoin="round">
+          <path d="M22 36 12 48h10Z" fill="#FF7A3D"/>
+          <path d="M42 36l10 12H42Z" fill="#FF7A3D"/>
+          <path d="M32 4c12 10 14 26 10 43H22C18 30 20 14 32 4Z" fill="#FFF8EC"/>
+          <circle cx="32" cy="24" r="6" fill="#2B3670"/>
+        </g>
+      </symbol>
+      <symbol id="i-earth" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r="22" fill="#6BB8F0" stroke="#1E2346" stroke-width="3"/>
+        <g fill="#5ED6B0" stroke="#1E2346" stroke-width="2.2" stroke-linejoin="round">
+          <path d="M18 24q6-8 13-3 3 6-3 9-7 3-10-6Z"/><path d="M34 40q8-5 12 3-2 7-8 5-5-2-4-8Z"/>
+        </g>
+      </symbol>
+      <symbol id="i-thumb-up" viewBox="0 0 64 64">
+        <g stroke="#1E2346" stroke-width="3" stroke-linejoin="round">
+          <rect x="8" y="29" width="12" height="26" rx="3" fill="#1E2346"/>
+          <path d="M24 30 31 12c1.5-4 8-3.5 8.5 1.5L38 26h12.5c4 0 6.5 3.5 5.5 7l-4 16.5c-.8 3-3 4.5-6 4.5H24Z" fill="currentColor"/>
+        </g>
+      </symbol>
+      <symbol id="i-thumb-down" viewBox="0 0 64 64">
+        <use href="#i-thumb-up" width="64" height="64" transform="rotate(180 32 32)"/>
+      </symbol>
+      <symbol id="i-maths" viewBox="0 0 64 64">
+        <g stroke="#1E2346" stroke-width="5" stroke-linecap="round">
+          <path d="M12 21h16M20 13v16M38 15l11 11M49 15 38 26M12 43h16M37 39h14M37 48h14"/>
+        </g>
+      </symbol>
+      <symbol id="i-english" viewBox="0 0 64 64">
+        <text x="32" y="45" text-anchor="middle" font-family="'Baloo 2', system-ui, sans-serif" font-weight="800" font-size="34" fill="#1E2346">Ab</text>
+      </symbol>
+      <symbol id="i-science" viewBox="0 0 64 64">
+        <path d="M26 9h12M28 9v15L15 49a5 5 0 0 0 4.4 7.3h25.2A5 5 0 0 0 49 49L36 24V9" fill="#FFF8EC" stroke="#1E2346" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M20.5 39h23l5.2 10.2a4 4 0 0 1-3.6 5.8H18.9a4 4 0 0 1-3.6-5.8Z" fill="#2B3670"/>
+        <circle cx="28" cy="46" r="2.5" fill="#FFF8EC"/><circle cx="36" cy="49" r="1.8" fill="#FFF8EC"/>
+      </symbol>
+      <symbol id="i-geo" viewBox="0 0 64 64">
+        <g fill="none" stroke="#1E2346" stroke-width="3">
+          <circle cx="32" cy="32" r="21" fill="#FFF8EC"/>
+          <ellipse cx="32" cy="32" rx="9" ry="21"/>
+          <path d="M11 32h42M14.5 21h35M14.5 43h35"/>
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="min-h-[100dvh] flex items-center justify-center min-[480px]:py-6">
+    <main class="device" x-data="app">
 
       <!-- Sky: hand-drawn sparkles + quiet planets (decorative) -->
       <div class="sky" aria-hidden="true">
         <svg viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <path id="spark" d="M0,-10 C1.2,-2.4 2.6,-1.1 10,0 C2.4,1.4 1.3,2.2 0,10.5 C-1.6,2.6 -2.2,1.2 -9.5,0 C-2.4,-1.3 -1.4,-2.1 0,-10Z"/>
-          </defs>
-
-          <!-- quiet planets, kept in sky tones so they never compete with accents -->
           <g>
             <circle cx="360" cy="96" r="30" fill="#253068"/>
             <circle cx="350" cy="86" r="6" fill="#2E3A78"/>
@@ -64,17 +178,13 @@
             <circle cx="40" cy="770" r="14" fill="#212B5C"/>
             <circle cx="70" cy="830" r="9" fill="#212B5C"/>
           </g>
-
-          <!-- sparkles -->
-          <g transform="translate(48 70) scale(.9)"><use href="#spark" class="twinkle" fill="#FFF4D6"/></g>
-          <g transform="translate(250 40) scale(.6)"><use href="#spark" class="twinkle d2" fill="#FFE59A"/></g>
+          <g transform="translate(215 26) scale(.8)"><use href="#spark" class="twinkle" fill="#FFF4D6"/></g>
+          <g transform="translate(250 40) scale(.7)"><use href="#spark" class="twinkle d2" fill="#FFE59A"/></g>
           <g transform="translate(300 220) scale(.7)"><use href="#spark" class="twinkle d1" fill="#FFF4D6"/></g>
           <g transform="translate(24 300) scale(.7)"><use href="#spark" class="twinkle d3" fill="#FFF4D6"/></g>
           <g transform="translate(380 420) scale(.7)"><use href="#spark" class="twinkle d2" fill="#FFE59A"/></g>
           <g transform="translate(140 600) scale(.7)"><use href="#spark" class="twinkle d1" fill="#FFF4D6"/></g>
-          <g transform="translate(340 700) scale(.6)"><use href="#spark" class="twinkle d3" fill="#FFF4D6"/></g>
-
-          <!-- dots -->
+          <g transform="translate(340 700) scale(.7)"><use href="#spark" class="twinkle d3" fill="#FFF4D6"/></g>
           <g fill="#FFF4D6" opacity=".7">
             <circle cx="120" cy="30" r="1.8"/><circle cx="190" cy="120" r="1.4"/>
             <circle cx="80" cy="180" r="1.6"/><circle cx="220" cy="260" r="1.2"/>
@@ -85,122 +195,281 @@
         </svg>
       </div>
 
-      <!-- Top bar -->
-      <header class="flex items-center gap-3 px-5 pt-5">
-        <button type="button" class="btn btn-paper !min-h-[56px] !w-[56px] !p-0 !text-xl" aria-label="Leave quiz">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-        <p class="font-head font-bold text-lg text-starwhite/90">
-          <span x-text="q.subject"></span> mission, question <span x-text="index + 1"></span>
-        </p>
-      </header>
+      <!-- ===================== HOME ===================== -->
+      <section class="screen" data-screen="home" aria-label="Home"
+               x-show="screen === 'home'"
+               x-transition:enter="screen-anim" x-transition:enter-start="screen-from" x-transition:enter-end="screen-to"
+               x-transition:leave="screen-anim-out" x-transition:leave-start="screen-to" x-transition:leave-end="screen-out">
+        <div class="screen-body pt-7 grid content-start gap-5">
+          <div class="home-hero">
+            <div>
+              <p class="font-head font-bold text-xl text-starwhite/80" x-text="greeting + ','"></p>
+              <h1 data-focus tabindex="-1" class="font-head font-extrabold text-[2.75rem] leading-none text-starwhite" x-text="kidName + '!'"></h1>
+              <p class="mt-2 font-semibold text-starwhite/85">Where shall we fly today?</p>
+            </div>
+            <div class="mascot is-wave" x-html="mascotSvg"></div>
+          </div>
 
-      <!-- Question -->
-      <section class="px-5 pt-6" aria-labelledby="q-prompt">
-        <h1 id="q-prompt" x-ref="prompt" tabindex="-1"
-            class="font-head font-extrabold text-[1.75rem] leading-tight text-starwhite outline-none"
-            x-text="q.prompt"></h1>
-      </section>
-
-      <!-- Answers -->
-      <section class="px-5 pt-7" aria-label="Answers">
-        <div class="answer-grid" role="group" aria-labelledby="q-prompt">
-          <template x-for="(opt, i) in q.options" :key="index + '-' + i">
-            <button type="button" class="answer-card"
-                    :data-accent="accent(i)"
-                    :class="cardClass(i)"
-                    :aria-pressed="(picked === i).toString()"
-                    :aria-disabled="checked.toString()"
-                    :aria-label="cardLabel(i)"
-                    @click="pick(i)">
-
-              <span class="picked-tick" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
-              </span>
-
-              <span class="card-inner" aria-hidden="true">
-                <!-- Front: planet badge + answer -->
-                <span class="card-face card-front">
-                  <span class="planet-badge">
-                    <svg viewBox="0 0 58 46">
-                      <ellipse class="ring" cx="29" cy="23" rx="28" ry="8" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="40 8 60 10"/>
-                      <circle cx="29" cy="23" r="20" :fill="`var(--${accent(i)})`" stroke="#1E2346" stroke-width="2.6"/>
-                      <circle cx="19" cy="16" r="3" :fill="`var(--${accent(i)}-deep)`" opacity=".35"/>
-                      <circle cx="40" cy="31" r="2.2" :fill="`var(--${accent(i)}-deep)`" opacity=".35"/>
-                    </svg>
-                    <span class="letter" x-text="letter(i)"></span>
-                  </span>
-                  <span class="answer-text" x-text="opt"></span>
-                </span>
-
-                <!-- Back: verdict -->
-                <span class="card-face card-back" :class="i === q.answer ? 'is-right' : 'is-miss'">
-                  <span class="verdict">
-                    <template x-if="i === q.answer">
-                      <svg width="22" height="22" viewBox="-11 -11 22 22"><path d="M0,-10 L2.9,-3.6 9.5,-3.1 4.5,1.4 6,8.1 0,4.6 -6,8.1 -4.5,1.4 -9.5,-3.1 -2.9,-3.6Z" fill="#FFCF4A" stroke="#1E2346" stroke-width="1.6" stroke-linejoin="round"/></svg>
-                    </template>
-                    <template x-if="i !== q.answer">
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9" fill="#FFF8EC"/><path d="M8.5 15c1.2.8 2.3.8 3.5 0s2.3-.8 3.5 0"/><circle cx="9" cy="10" r=".6" fill="#1E2346"/><circle cx="15" cy="10" r=".6" fill="#1E2346"/></svg>
-                    </template>
-                    <span x-text="i === q.answer ? 'Correct!' : 'Not quite'"></span>
-                  </span>
-                  <span class="answer-text" x-text="opt"></span>
-                </span>
-              </span>
-
-              <template x-if="checked && i === q.answer && isRight">
-                <span class="burst" aria-hidden="true">
-                  <template x-for="n in 5" :key="n">
-                    <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"/></svg></span>
-                  </template>
+          <div class="streak" role="group" :aria-label="`${streak} day streak. ${weekLabel}`">
+            <div aria-hidden="true">
+              <p class="font-head font-extrabold text-[1.75rem] leading-none text-moon" x-text="`${streak} days`"></p>
+              <p class="font-bold text-starwhite/80">in a row</p>
+            </div>
+            <div class="streak-days" aria-hidden="true">
+              <template x-for="(d, i) in week" :key="i">
+                <span class="streak-day" :class="{ 'is-today': d.today }">
+                  <svg><use :href="d.lit ? '#i-star' : '#i-star-empty'"></use></svg>
+                  <span x-text="d.label"></span>
                 </span>
               </template>
-            </button>
+            </div>
+          </div>
+
+          <h2 class="font-head font-extrabold text-2xl text-starwhite -mb-1">Pick a planet</h2>
+          <div class="subject-grid">
+            <template x-for="s in subjects" :key="s.id">
+              <button type="button" class="subject-tile" :data-accent="s.accent"
+                      :aria-label="`${s.name} planet, ${subjectCount(s.id)} questions`"
+                      @click="startMission(s.id)">
+                <span class="subject-planet" aria-hidden="true">
+                  <svg viewBox="0 0 76 62">
+                    <ellipse class="ring" cx="38" cy="31" rx="37" ry="9" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="50 9 80 8"/>
+                    <circle cx="38" cy="31" r="27" :fill="`var(--${s.accent})`" stroke="#1E2346" stroke-width="2.6"/>
+                    <use :href="'#' + s.icon" x="21" y="14" width="34" height="34"></use>
+                  </svg>
+                </span>
+                <span class="subject-name" aria-hidden="true" x-text="s.name"></span>
+                <span class="subject-meta" aria-hidden="true" x-text="`${subjectCount(s.id)} questions`"></span>
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <div class="screen-foot">
+          <button type="button" class="btn btn-flame w-full" @click="startMission('daily')">Start today’s mission</button>
+          <p class="text-center font-semibold text-starwhite/80 -mt-1">10 questions with all 5 games</p>
+        </div>
+      </section>
+
+      <!-- ===================== QUIZ ===================== -->
+      <section class="screen" data-screen="quiz" aria-label="Quiz"
+               x-show="screen === 'quiz'"
+               x-transition:enter="screen-anim" x-transition:enter-start="screen-from" x-transition:enter-end="screen-to"
+               x-transition:leave="screen-anim-out" x-transition:leave-start="screen-to" x-transition:leave-end="screen-out">
+
+        <div class="quiz-top">
+          <button type="button" class="btn btn-paper !min-h-[56px] !w-[56px] !p-0" aria-label="Leave mission and go home" @click="leaveQuiz()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+          <div class="flight" role="progressbar" aria-label="Mission progress"
+               aria-valuemin="0" :aria-valuemax="total" :aria-valuenow="qIndex + (checked ? 1 : 0)"
+               :aria-valuetext="`${qIndex + (checked ? 1 : 0)} of ${total} questions done`">
+            <div class="flight-track"></div>
+            <div class="flight-trail" :style="`width: calc((100% - 44px) * ${progress})`"></div>
+            <svg class="flight-end earth" aria-hidden="true"><use href="#i-earth"></use></svg>
+            <svg class="flight-end moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+            <div class="flight-rocket" aria-hidden="true" :style="`left: calc(22px + (100% - 44px) * ${progress})`">
+              <svg><use href="#i-rocket"></use></svg>
+            </div>
+          </div>
+        </div>
+        <p class="q-meta"><span x-text="subjectName"></span>, question <span x-text="qIndex + 1"></span> of <span x-text="total"></span></p>
+
+        <div class="screen-body pt-3">
+          <template x-for="k in [qKey]" :key="k">
+            <div class="q-in grid gap-5 pb-3">
+              <h1 id="q-prompt" data-focus tabindex="-1" class="q-prompt"
+                  x-text="q.type === 'truefalse' ? 'True or false?' : q.prompt"></h1>
+
+              <!-- Picture -->
+              <template x-if="q.type === 'picture'">
+                <div class="picture-frame" :class="{ 'is-shadow': q.shadow && !checked }" role="img" :aria-label="q.alt">
+                  <svg aria-hidden="true"><use :href="'#' + q.picture"></use></svg>
+                </div>
+              </template>
+
+              <!-- True / false statement -->
+              <template x-if="q.type === 'truefalse'">
+                <p class="statement" x-text="q.prompt"></p>
+              </template>
+
+              <!-- Choice cards: multiple choice, picture, true/false -->
+              <template x-if="isChoice">
+                <div class="answer-grid" role="group" aria-labelledby="q-prompt"
+                     :class="{ 'is-tf': q.type === 'truefalse', 'is-picture': q.type === 'picture' }">
+                  <template x-for="(opt, i) in options" :key="i">
+                    <button type="button" class="answer-card"
+                            :data-accent="opt.accent"
+                            :class="cardClass(i)"
+                            :aria-pressed="(picked === i).toString()"
+                            :aria-disabled="checked.toString()"
+                            :aria-label="cardLabel(i)"
+                            @click="pick(i)">
+                      <span class="picked-tick" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+                      </span>
+                      <span class="card-inner" aria-hidden="true">
+                        <span class="card-face card-front">
+                          <template x-if="opt.icon">
+                            <svg class="opt-icon"><use :href="'#' + opt.icon"></use></svg>
+                          </template>
+                          <template x-if="!opt.icon">
+                            <span class="planet-badge">
+                              <svg viewBox="0 0 58 46">
+                                <ellipse class="ring" cx="29" cy="23" rx="28" ry="8" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="40 8 60 10"/>
+                                <circle cx="29" cy="23" r="20" :fill="`var(--${opt.accent})`" stroke="#1E2346" stroke-width="2.6"/>
+                                <circle cx="19" cy="16" r="3" :fill="`var(--${opt.accent}-deep)`" opacity=".35"/>
+                                <circle cx="40" cy="31" r="2.2" :fill="`var(--${opt.accent}-deep)`" opacity=".35"/>
+                              </svg>
+                              <span class="letter" x-text="letter(i)"></span>
+                            </span>
+                          </template>
+                          <span class="answer-text" x-text="opt.label"></span>
+                        </span>
+                        <span class="card-face card-back" :class="i === answerIndex ? 'is-right' : 'is-miss'">
+                          <span class="verdict">
+                            <template x-if="i === answerIndex">
+                              <svg width="22" height="22" viewBox="0 0 64 64"><use href="#i-star"></use></svg>
+                            </template>
+                            <template x-if="i !== answerIndex">
+                              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9" fill="#FFF8EC"/><path d="M8.5 15c1.2.8 2.3.8 3.5 0s2.3-.8 3.5 0"/><circle cx="9" cy="10" r=".6" fill="#1E2346"/><circle cx="15" cy="10" r=".6" fill="#1E2346"/></svg>
+                            </template>
+                            <span x-text="i === answerIndex ? 'Correct!' : 'Not quite'"></span>
+                          </span>
+                          <span class="answer-text" x-text="opt.label"></span>
+                        </span>
+                      </span>
+                      <template x-if="checked && i === answerIndex && correct">
+                        <span class="burst" aria-hidden="true">
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
+                        </span>
+                      </template>
+                    </button>
+                  </template>
+                </div>
+              </template>
+
+              <!-- Fill the gap -->
+              <template x-if="q.type === 'gap'">
+                <div class="grid gap-6">
+                  <p class="sentence">
+                    <span x-text="q.before"></span>
+                    <button type="button" class="gap" :class="{ 'is-filled': gapWord !== null }"
+                            :aria-label="gapLabel" :aria-disabled="checked.toString()" @click="clearGap()">
+                      <template x-if="gapWord !== null">
+                        <span class="gap-chip" :class="{ 'is-right': checked && correct, 'is-miss': checked && !correct }" x-text="q.words[gapWord]"></span>
+                      </template>
+                    </button>
+                    <span x-text="q.after"></span>
+                  </p>
+                  <div class="word-tray" role="group" aria-label="Word tiles">
+                    <template x-for="(w, i) in q.words" :key="i">
+                      <button type="button" class="word-tile" :class="{ 'is-used': gapWord === i }"
+                              :disabled="gapWord === i || checked"
+                              :aria-label="gapWord === i ? `${w}, in the gap` : `Put ${w} in the gap`"
+                              @click="placeWord(i, $event)" x-text="w"></button>
+                    </template>
+                  </div>
+                </div>
+              </template>
+
+              <!-- Match pairs -->
+              <template x-if="q.type === 'match'">
+                <div class="match-board">
+                  <template x-for="l in match.lines" :key="l.key">
+                    <svg class="match-lines" aria-hidden="true">
+                      <path :d="l.d" pathLength="1"></path>
+                      <circle :cx="l.x1" :cy="l.y1" r="6"></circle>
+                      <circle :cx="l.x2" :cy="l.y2" r="6"></circle>
+                    </svg>
+                  </template>
+                  <div class="match-col" role="group" aria-label="Left side">
+                    <template x-for="(p, i) in q.pairs" :key="'L' + i">
+                      <button type="button" class="match-item" :data-m="'L' + i"
+                              :class="{ 'is-sel': isSel('L', i), 'is-matched': isMatched('L', i), 'is-wrong': isWrong('L', i) }"
+                              :aria-pressed="isSel('L', i).toString()" :aria-label="matchLabel('L', i)"
+                              @click="tapMatch('L', i)" x-text="p[0]"></button>
+                    </template>
+                  </div>
+                  <div class="match-col" role="group" aria-label="Right side">
+                    <template x-for="(o, pos) in match.order" :key="'R' + pos">
+                      <button type="button" class="match-item" :data-m="'R' + pos"
+                              :class="{ 'is-sel': isSel('R', pos), 'is-matched': isMatched('R', pos), 'is-wrong': isWrong('R', pos) }"
+                              :aria-pressed="isSel('R', pos).toString()" :aria-label="matchLabel('R', pos)"
+                              @click="tapMatch('R', pos)" x-text="rightItem(pos)"></button>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
           </template>
         </div>
 
-        <p class="feedback mt-6 font-semibold" role="status" aria-live="polite" x-text="feedback"></p>
+        <div class="screen-foot">
+          <div class="feedback">
+            <div class="mascot" :class="'is-' + mood" x-html="mascotSvg"></div>
+            <p role="status" aria-live="polite" x-text="feedback"></p>
+          </div>
+          <button type="button" class="btn btn-flame w-full" :disabled="!canCheck" @click="check()" x-text="buttonLabel">Check</button>
+        </div>
       </section>
 
-      <!-- Bottom action, thumb zone -->
-      <footer class="mt-auto px-5 pb-7 pt-4">
-        <button type="button" class="btn btn-flame w-full"
-                :disabled="picked === null"
-                @click="check()"
-                x-text="buttonLabel">Check</button>
-      </footer>
+      <!-- ===================== RESULTS ===================== -->
+      <section class="screen" data-screen="results" aria-label="Results"
+               x-show="screen === 'results'"
+               x-transition:enter="screen-anim" x-transition:enter-start="screen-from" x-transition:enter-end="screen-to"
+               x-transition:leave="screen-anim-out" x-transition:leave-start="screen-to" x-transition:leave-end="screen-out">
+        <div class="quiz-top">
+          <button type="button" class="btn btn-paper !min-h-[56px] !w-[56px] !p-0" aria-label="Go home" @click="go('home')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6.5 10v9h11v-9"/></svg>
+          </button>
+        </div>
+        <div class="screen-body">
+          <template x-if="screen === 'results'">
+            <div class="grid content-start gap-5 text-center pt-2">
+              <h1 data-focus tabindex="-1" class="font-head font-extrabold text-[2.25rem] leading-tight text-starwhite" x-text="resultTitle"></h1>
+              <div class="result-stars" role="img" :aria-label="`${stars} out of 3 stars`">
+                <template x-for="n in 3" :key="n">
+                  <span class="result-star" :class="n <= stars ? 'is-on' : 'is-off'">
+                    <svg viewBox="0 0 64 64"><use :href="n <= stars ? '#i-star' : '#i-star-empty'"></use></svg>
+                  </span>
+                </template>
+              </div>
+              <div class="result-card mt-16">
+                <div class="mascot" :class="'is-' + resultMood" x-html="mascotSvg"></div>
+                <p class="result-score"><span x-text="score"></span> of <span x-text="total"></span> right</p>
+                <p class="font-semibold text-ink-soft" x-text="resultMessage"></p>
+              </div>
+              <p class="font-bold text-starwhite/85">
+                Your streak is <span class="text-moon" x-text="`${streak} days`"></span> in a row.
+              </p>
+            </div>
+          </template>
+        </div>
+        <div class="screen-foot">
+          <button type="button" class="btn btn-paper w-full" @click="startMission(mission.id)">Try again</button>
+          <button type="button" class="btn btn-flame w-full" @click="startMission(nextMissionId)">Next mission</button>
+          <p class="text-center font-semibold text-starwhite/80 -mt-1">Up next: <span x-text="nextMissionName"></span></p>
+        </div>
+      </section>
+
+      <!-- ===================== Rocket blast ===================== -->
+      <template x-if="blasting">
+        <div class="blast" aria-hidden="true">
+          <div class="blast-rocket"><svg viewBox="0 0 64 64"><use href="#i-rocket"></use></svg></div>
+          <span class="blast-star" style="left:19%;top:70%;animation-delay:250ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
+          <span class="blast-star" style="left:34%;top:62%;animation-delay:380ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
+          <span class="blast-star" style="left:44%;top:50%;animation-delay:450ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
+          <span class="blast-star" style="left:60%;top:41%;animation-delay:580ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
+          <span class="blast-star" style="left:68%;top:31%;animation-delay:640ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
+          <span class="blast-star" style="left:86%;top:20%;animation-delay:780ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
+        </div>
+      </template>
     </main>
-
-    <!-- ===================== REVIEW SHEET (step 1 only) ===================== -->
-    <aside class="w-full max-w-[400px] px-5 pb-12 lg:px-0 lg:pb-0 text-starwhite" aria-label="Design tokens review sheet">
-      <h2 class="font-head font-extrabold text-2xl">Step 1 review sheet</h2>
-      <p class="text-starwhite/75 mt-1">This panel is only here for review. It won’t ship with the app.</p>
-
-      <h3 class="font-head font-bold text-xl mt-6 mb-3">Colour</h3>
-      <div class="grid grid-cols-4 gap-3 text-sm">
-        <div><div class="swatch" style="background:#141B3C"></div><p class="mt-1 font-bold">Night</p><p class="text-starwhite/70">#141B3C</p></div>
-        <div><div class="swatch" style="background:#FFF8EC"></div><p class="mt-1 font-bold">Cream</p><p class="text-starwhite/70">#FFF8EC</p></div>
-        <div><div class="swatch" style="background:#1E2346"></div><p class="mt-1 font-bold">Ink</p><p class="text-starwhite/70">#1E2346</p></div>
-        <div><div class="swatch" style="background:#FFF4D6"></div><p class="mt-1 font-bold">Starlight</p><p class="text-starwhite/70">#FFF4D6</p></div>
-        <div><div class="swatch" style="background:#FF7A3D"></div><p class="mt-1 font-bold">Rocket</p><p class="text-starwhite/70">#FF7A3D</p></div>
-        <div><div class="swatch" style="background:#FFCF4A"></div><p class="mt-1 font-bold">Moon</p><p class="text-starwhite/70">#FFCF4A</p></div>
-        <div><div class="swatch" style="background:#5ED6B0"></div><p class="mt-1 font-bold">Mint</p><p class="text-starwhite/70">#5ED6B0</p></div>
-        <div><div class="swatch" style="background:#FF9EB5"></div><p class="mt-1 font-bold">Pink</p><p class="text-starwhite/70">#FF9EB5</p></div>
-      </div>
-
-      <h3 class="font-head font-bold text-xl mt-6 mb-2">Type</h3>
-      <p class="font-head font-extrabold text-4xl leading-none">Baloo 2, 36</p>
-      <p class="font-head font-bold text-[1.375rem] mt-1">Answer text, Baloo 2 22</p>
-      <p class="mt-1">Body copy is Nunito at 18px, never smaller.</p>
-
-      <h3 class="font-head font-bold text-xl mt-6 mb-3">Buttons</h3>
-      <div class="grid grid-cols-2 gap-4">
-        <div><button class="btn btn-flame w-full" type="button">Check</button><p class="text-sm mt-2 text-starwhite/70">Rest</p></div>
-        <div><button class="btn btn-flame is-pressed w-full" type="button" tabindex="-1">Check</button><p class="text-sm mt-2 text-starwhite/70">Pressed</p></div>
-        <div><button class="btn btn-paper w-full" type="button">Try again</button><p class="text-sm mt-2 text-starwhite/70">Paper</p></div>
-        <div><button class="btn btn-flame w-full" type="button" disabled>Check</button><p class="text-sm mt-2 text-starwhite/70">Waiting for a pick</p></div>
-      </div>
-    </aside>
   </div>
 </body>
 </html>
