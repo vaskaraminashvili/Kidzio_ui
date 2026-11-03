@@ -1,0 +1,368 @@
+/* ==========================================================================
+   Star Hop — design tokens, components and motion
+   Friendly cartoon space adventure for kids 7–12.
+   ========================================================================== */
+
+/* ---------- 1. Tokens ---------------------------------------------------- */
+:root {
+  /* Night sky (base) */
+  --night: #141B3C;          /* page / sky */
+  --night-raised: #1F2853;   /* panels sitting on the sky */
+  --night-deep: #0D1330;     /* solid "ink" shadows under cards on the sky */
+  --night-line: #34407A;     /* hand-drawn outlines on the sky */
+
+  /* Paper (where reading happens) */
+  --cream: #FFF8EC;          /* cards, answer areas */
+  --cream-deep: #F1E3CA;     /* pressed/disabled paper, dividers */
+  --ink: #1E2346;            /* text on cream: 14.6:1 */
+  --ink-soft: #4C5178;       /* secondary text on cream: 7.4:1 */
+  --star-white: #FFF4D6;     /* text & stars on the sky: 14.9:1 on night */
+
+  /* Warm accents. "-deep" = solid shadow / outline partner, never text on night */
+  --rocket: #FF7A3D;   --rocket-deep: #C4511C;
+  --moon:   #FFCF4A;   --moon-deep:   #C9941A;
+  --mint:   #5ED6B0;   --mint-deep:   #2C9677;
+  --pink:   #FF9EB5;   --pink-deep:   #D2637F;
+
+  /* The one gradient: rocket flame */
+  --flame: linear-gradient(180deg, #FFD24D 0%, #FF9A3C 48%, #F4653A 100%);
+
+  /* Type */
+  --font-head: "Baloo 2", "Comic Neue", system-ui, sans-serif;
+  --font-body: "Nunito", system-ui, sans-serif;
+  --fs-body: 1.125rem;   /* 18px floor */
+  --fs-answer: 1.375rem; /* 22px */
+  --fs-h2: 1.75rem;      /* 28px */
+  --fs-h1: 2.25rem;      /* 36px */
+
+  /* Shape */
+  --r-card: 28px;
+  --r-btn: 22px;
+  --r-pill: 999px;
+  --outline: 3px;
+
+  /* Motion */
+  --press-depth: 4px;
+  --t-press: 120ms;
+  --t-screen: 250ms;
+  --t-flip: 520ms;
+  --ease-bounce: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-soft: cubic-bezier(.22, .8, .36, 1);
+}
+
+/* ---------- 2. Base ------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--star-white);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, .font-head { font-family: var(--font-head); line-height: 1.15; }
+
+/* Solid moon-yellow focus ring, not a glow */
+:focus-visible {
+  outline: 4px solid var(--moon);
+  outline-offset: 4px;
+  border-radius: 14px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- 3. Phone frame ---------------------------------------------- */
+.device {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  background: var(--night);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+@media (min-width: 480px) {
+  .device {
+    width: 400px;
+    min-height: 0;
+    height: min(860px, calc(100dvh - 48px));
+    border-radius: 48px;
+    border: 10px solid var(--night-deep);
+    box-shadow: 0 0 0 2px var(--night-line);
+  }
+}
+
+/* ---------- 4. Sky (stars + planets) ------------------------------------ */
+.sky { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.sky svg { width: 100%; height: 100%; display: block; }
+
+.twinkle { animation: twinkle 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.twinkle.d1 { animation-delay: -1.2s; animation-duration: 6s; }
+.twinkle.d2 { animation-delay: -2.6s; animation-duration: 7s; }
+.twinkle.d3 { animation-delay: -3.9s; animation-duration: 5.5s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: .35; transform: scale(.82); }
+}
+
+/* ---------- 5. Chunky buttons ------------------------------------------- */
+.btn {
+  --btn-shadow: var(--rocket-deep);
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 60px;
+  padding: 0 1.75rem;
+  border: 0;
+  border-radius: var(--r-btn);
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: .01em;
+  color: var(--ink);
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 var(--press-depth) 0 var(--btn-shadow);
+  transform: translateY(0);
+  transition: transform var(--t-press) ease-out, box-shadow var(--t-press) ease-out;
+}
+
+.btn:active:not(:disabled),
+.btn.is-pressed {
+  transform: translateY(var(--press-depth));
+  box-shadow: 0 0 0 var(--btn-shadow);
+}
+
+/* Primary — the only gradient in the app */
+.btn-flame { background: var(--flame); }
+
+/* Cartoon gloss: a small drawn highlight, not a sheen */
+.btn-flame::before {
+  content: "";
+  position: absolute; top: 9px; left: 16px;
+  width: 26px; height: 9px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, .55);
+  transform: rotate(-8deg);
+}
+
+/* Secondary — paper button */
+.btn-paper { --btn-shadow: var(--night-deep); background: var(--cream); }
+
+.btn:disabled {
+  --btn-shadow: #C8B697;
+  background: var(--cream-deep);
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+.btn:disabled::before { display: none; }
+
+/* ---------- 6. Multiple-choice planet cards ----------------------------- */
+.answer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  perspective: 900px;
+}
+
+.answer-card {
+  --accent: var(--rocket);
+  --accent-deep: var(--rocket-deep);
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 136px;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+  font: inherit;
+  border-radius: var(--r-card);
+  transition: transform 260ms var(--ease-bounce), opacity 200ms ease;
+}
+.answer-card[data-accent="moon"] { --accent: var(--moon); --accent-deep: var(--moon-deep); }
+.answer-card[data-accent="mint"] { --accent: var(--mint); --accent-deep: var(--mint-deep); }
+.answer-card[data-accent="pink"] { --accent: var(--pink); --accent-deep: var(--pink-deep); }
+
+.answer-card:focus-visible { border-radius: var(--r-card); }
+
+.card-inner {
+  position: relative;
+  display: grid;
+  height: 100%;
+  min-height: inherit;
+  transform-style: preserve-3d;
+  transition: transform var(--t-flip) var(--ease-soft);
+}
+
+.card-face {
+  grid-area: 1 / 1;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px 16px;
+  border-radius: var(--r-card);
+  background: var(--cream);
+  border: var(--outline) solid var(--cream);
+  box-shadow: 0 6px 0 var(--night-deep);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: box-shadow 260ms var(--ease-bounce), border-color 160ms ease;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  align-items: flex-start;
+}
+
+.answer-text {
+  font-family: var(--font-head);
+  font-size: var(--fs-answer);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* Planet letter badge */
+.planet-badge { position: relative; width: 58px; height: 46px; flex: none; }
+.planet-badge svg { width: 100%; height: 100%; overflow: visible; }
+.planet-badge .ring { transform-origin: 29px 23px; transition: transform 600ms var(--ease-soft); }
+.planet-badge .letter {
+  position: absolute; left: 0; right: 0; top: 50%;
+  transform: translateY(-52%);
+  text-align: center;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--ink);
+  pointer-events: none;
+}
+
+/* Selected: lift into orbit */
+.answer-card.is-selected { transform: translateY(-10px) rotate(-1.5deg); }
+.answer-card.is-selected .card-front {
+  border-color: var(--ink);
+  box-shadow: 0 14px 0 var(--accent-deep);
+}
+.answer-card.is-selected .ring { transform: rotate(-24deg); }
+.answer-card.is-selected { animation: orbit-up 420ms var(--ease-bounce); }
+
+@keyframes orbit-up {
+  0%   { transform: translate(0, 0) rotate(0); }
+  45%  { transform: translate(6px, -14px) rotate(2.5deg); }
+  100% { transform: translate(0, -10px) rotate(-1.5deg); }
+}
+
+/* "Picked" tick that appears on selection: selection is never colour-only */
+.picked-tick {
+  position: absolute; top: -10px; right: -6px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--cream);
+  display: grid; place-items: center;
+  border: 3px solid var(--cream);
+  transform: scale(0);
+  transition: transform 220ms var(--ease-bounce);
+  z-index: 2;
+}
+.answer-card.is-selected .picked-tick { transform: scale(1); }
+
+/* Reveal: flip */
+.answer-card.is-flipped .card-inner { transform: rotateY(180deg); }
+.answer-card.is-dimmed { transform: scale(.95); }
+/* Options that weren't picked drift back into the sky */
+.answer-card.is-dimmed .card-front {
+  background: var(--night-raised);
+  border-color: var(--night-line);
+  box-shadow: none;
+  color: var(--star-white);
+}
+.answer-card.is-dimmed .planet-badge { opacity: .55; }
+.answer-card.is-revealed { cursor: default; }
+
+.card-back.is-right { background: var(--mint); border-color: var(--mint); box-shadow: 0 6px 0 var(--mint-deep); }
+.card-back.is-miss  { background: var(--pink); border-color: var(--pink); box-shadow: 0 6px 0 var(--pink-deep); }
+
+.verdict {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 12px 2px 6px;
+  border-radius: var(--r-pill);
+  background: var(--cream);
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+/* Wrong pick: gentle wobble after the flip lands */
+.answer-card.is-wobbling { animation: wobble 620ms ease-in-out var(--t-flip) both; }
+@keyframes wobble {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-4deg); }
+  45% { transform: rotate(3deg); }
+  70% { transform: rotate(-1.5deg); }
+}
+
+/* Right answer: little star burst */
+.burst { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.burst span {
+  position: absolute; left: 50%; top: 50%;
+  width: 18px; height: 18px; margin: -9px;
+  color: var(--moon);
+  opacity: 0;
+  animation: burst 700ms var(--ease-soft) calc(var(--t-flip) - 80ms) both;
+}
+.burst span:nth-child(1) { --dx: -70px; --dy: -60px; }
+.burst span:nth-child(2) { --dx:  72px; --dy: -54px; }
+.burst span:nth-child(3) { --dx: -78px; --dy:  40px; }
+.burst span:nth-child(4) { --dx:  76px; --dy:  46px; }
+.burst span:nth-child(5) { --dx:   0px; --dy: -86px; }
+@keyframes burst {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.3) rotate(0); }
+  30%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.1) rotate(90deg); }
+}
+
+/* Feedback strip under the grid */
+.feedback {
+  border-radius: 20px;
+  padding: 12px 16px;
+  background: var(--night-raised);
+  border: 2px dashed var(--night-line);
+  color: var(--star-white);
+  min-height: 56px;
+}
+
+/* ---------- 7. Screen transition (used from step 2) --------------------- */
+.screen-enter { transition: opacity var(--t-screen) ease, transform var(--t-screen) var(--ease-soft); }
+.screen-enter-start { opacity: 0; transform: translateX(24px); }
+.screen-enter-end { opacity: 1; transform: translateX(0); }
+
+/* ---------- 8. Reduced motion ------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+  .twinkle, .burst { animation: none !important; display: none; }
+  .answer-card.is-selected { animation: none; transform: translateY(-6px); }
+  .answer-card.is-wobbling { animation: none; }
+  /* Swap faces instead of spinning in 3D */
+  .answer-card.is-flipped .card-inner { transform: none; }
+  .card-back { transform: none; opacity: 0; }
+  .answer-card.is-flipped .card-front { opacity: 0; }
+  .answer-card.is-flipped .card-back { opacity: 1; }
+}
+
+/* ---------- 9. Review sheet (step 1 only, outside the phone) ------------ */
+.swatch { width: 100%; aspect-ratio: 1.4; border-radius: 18px; border: 2px solid var(--night-line); }

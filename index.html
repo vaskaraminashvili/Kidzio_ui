@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#141B3C">
+  <title>Star Hop</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night: { DEFAULT: '#141B3C', raised: '#1F2853', deep: '#0D1330', line: '#34407A' },
+            cream: { DEFAULT: '#FFF8EC', deep: '#F1E3CA' },
+            ink: { DEFAULT: '#1E2346', soft: '#4C5178' },
+            starwhite: '#FFF4D6',
+            rocket: { DEFAULT: '#FF7A3D', deep: '#C4511C' },
+            moon: { DEFAULT: '#FFCF4A', deep: '#C9941A' },
+            mint: { DEFAULT: '#5ED6B0', deep: '#2C9677' },
+            pink: { DEFAULT: '#FF9EB5', deep: '#D2637F' },
+          },
+          fontFamily: {
+            head: ['"Baloo 2"', 'system-ui', 'sans-serif'],
+            body: ['Nunito', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js" defer></script>
+</head>
+
+<body class="font-body">
+  <div class="min-h-[100dvh] flex flex-col items-center gap-10 min-[480px]:py-6 lg:flex-row lg:justify-center lg:items-center lg:gap-16">
+
+    <!-- ===================== PHONE ===================== -->
+    <main class="device flex flex-col" x-data="mcQuestion">
+
+      <!-- Sky: hand-drawn sparkles + quiet planets (decorative) -->
+      <div class="sky" aria-hidden="true">
+        <svg viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <path id="spark" d="M0,-10 C1.2,-2.4 2.6,-1.1 10,0 C2.4,1.4 1.3,2.2 0,10.5 C-1.6,2.6 -2.2,1.2 -9.5,0 C-2.4,-1.3 -1.4,-2.1 0,-10Z"/>
+          </defs>
+
+          <!-- quiet planets, kept in sky tones so they never compete with accents -->
+          <g>
+            <circle cx="360" cy="96" r="30" fill="#253068"/>
+            <circle cx="350" cy="86" r="6" fill="#2E3A78"/>
+            <circle cx="370" cy="108" r="4" fill="#2E3A78"/>
+            <ellipse cx="360" cy="98" rx="50" ry="11" fill="none" stroke="#3B488A" stroke-width="4" stroke-linecap="round" transform="rotate(-14 360 98)" stroke-dasharray="120 18"/>
+          </g>
+          <g>
+            <circle cx="-10" cy="830" r="120" fill="#1C2550"/>
+            <circle cx="40" cy="770" r="14" fill="#212B5C"/>
+            <circle cx="70" cy="830" r="9" fill="#212B5C"/>
+          </g>
+
+          <!-- sparkles -->
+          <g transform="translate(48 70) scale(.9)"><use href="#spark" class="twinkle" fill="#FFF4D6"/></g>
+          <g transform="translate(250 40) scale(.6)"><use href="#spark" class="twinkle d2" fill="#FFE59A"/></g>
+          <g transform="translate(300 220) scale(.7)"><use href="#spark" class="twinkle d1" fill="#FFF4D6"/></g>
+          <g transform="translate(24 300) scale(.7)"><use href="#spark" class="twinkle d3" fill="#FFF4D6"/></g>
+          <g transform="translate(380 420) scale(.7)"><use href="#spark" class="twinkle d2" fill="#FFE59A"/></g>
+          <g transform="translate(140 600) scale(.7)"><use href="#spark" class="twinkle d1" fill="#FFF4D6"/></g>
+          <g transform="translate(340 700) scale(.6)"><use href="#spark" class="twinkle d3" fill="#FFF4D6"/></g>
+
+          <!-- dots -->
+          <g fill="#FFF4D6" opacity=".7">
+            <circle cx="120" cy="30" r="1.8"/><circle cx="190" cy="120" r="1.4"/>
+            <circle cx="80" cy="180" r="1.6"/><circle cx="220" cy="260" r="1.2"/>
+            <circle cx="370" cy="300" r="1.6"/><circle cx="60" cy="470" r="1.3"/>
+            <circle cx="300" cy="560" r="1.8"/><circle cx="210" cy="780" r="1.4"/>
+            <circle cx="380" cy="820" r="1.6"/><circle cx="16" cy="640" r="1.2"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Top bar -->
+      <header class="flex items-center gap-3 px-5 pt-5">
+        <button type="button" class="btn btn-paper !min-h-[56px] !w-[56px] !p-0 !text-xl" aria-label="Leave quiz">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <p class="font-head font-bold text-lg text-starwhite/90">
+          <span x-text="q.subject"></span> mission, question <span x-text="index + 1"></span>
+        </p>
+      </header>
+
+      <!-- Question -->
+      <section class="px-5 pt-6" aria-labelledby="q-prompt">
+        <h1 id="q-prompt" x-ref="prompt" tabindex="-1"
+            class="font-head font-extrabold text-[1.75rem] leading-tight text-starwhite outline-none"
+            x-text="q.prompt"></h1>
+      </section>
+
+      <!-- Answers -->
+      <section class="px-5 pt-7" aria-label="Answers">
+        <div class="answer-grid" role="group" aria-labelledby="q-prompt">
+          <template x-for="(opt, i) in q.options" :key="index + '-' + i">
+            <button type="button" class="answer-card"
+                    :data-accent="accent(i)"
+                    :class="cardClass(i)"
+                    :aria-pressed="(picked === i).toString()"
+                    :aria-disabled="checked.toString()"
+                    :aria-label="cardLabel(i)"
+                    @click="pick(i)">
+
+              <span class="picked-tick" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>
+              </span>
+
+              <span class="card-inner" aria-hidden="true">
+                <!-- Front: planet badge + answer -->
+                <span class="card-face card-front">
+                  <span class="planet-badge">
+                    <svg viewBox="0 0 58 46">
+                      <ellipse class="ring" cx="29" cy="23" rx="28" ry="8" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="40 8 60 10"/>
+                      <circle cx="29" cy="23" r="20" :fill="`var(--${accent(i)})`" stroke="#1E2346" stroke-width="2.6"/>
+                      <circle cx="19" cy="16" r="3" :fill="`var(--${accent(i)}-deep)`" opacity=".35"/>
+                      <circle cx="40" cy="31" r="2.2" :fill="`var(--${accent(i)}-deep)`" opacity=".35"/>
+                    </svg>
+                    <span class="letter" x-text="letter(i)"></span>
+                  </span>
+                  <span class="answer-text" x-text="opt"></span>
+                </span>
+
+                <!-- Back: verdict -->
+                <span class="card-face card-back" :class="i === q.answer ? 'is-right' : 'is-miss'">
+                  <span class="verdict">
+                    <template x-if="i === q.answer">
+                      <svg width="22" height="22" viewBox="-11 -11 22 22"><path d="M0,-10 L2.9,-3.6 9.5,-3.1 4.5,1.4 6,8.1 0,4.6 -6,8.1 -4.5,1.4 -9.5,-3.1 -2.9,-3.6Z" fill="#FFCF4A" stroke="#1E2346" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                    </template>
+                    <template x-if="i !== q.answer">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="12" r="9" fill="#FFF8EC"/><path d="M8.5 15c1.2.8 2.3.8 3.5 0s2.3-.8 3.5 0"/><circle cx="9" cy="10" r=".6" fill="#1E2346"/><circle cx="15" cy="10" r=".6" fill="#1E2346"/></svg>
+                    </template>
+                    <span x-text="i === q.answer ? 'Correct!' : 'Not quite'"></span>
+                  </span>
+                  <span class="answer-text" x-text="opt"></span>
+                </span>
+              </span>
+
+              <template x-if="checked && i === q.answer && isRight">
+                <span class="burst" aria-hidden="true">
+                  <template x-for="n in 5" :key="n">
+                    <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"/></svg></span>
+                  </template>
+                </span>
+              </template>
+            </button>
+          </template>
+        </div>
+
+        <p class="feedback mt-6 font-semibold" role="status" aria-live="polite" x-text="feedback"></p>
+      </section>
+
+      <!-- Bottom action, thumb zone -->
+      <footer class="mt-auto px-5 pb-7 pt-4">
+        <button type="button" class="btn btn-flame w-full"
+                :disabled="picked === null"
+                @click="check()"
+                x-text="buttonLabel">Check</button>
+      </footer>
+    </main>
+
+    <!-- ===================== REVIEW SHEET (step 1 only) ===================== -->
+    <aside class="w-full max-w-[400px] px-5 pb-12 lg:px-0 lg:pb-0 text-starwhite" aria-label="Design tokens review sheet">
+      <h2 class="font-head font-extrabold text-2xl">Step 1 review sheet</h2>
+      <p class="text-starwhite/75 mt-1">This panel is only here for review. It won’t ship with the app.</p>
+
+      <h3 class="font-head font-bold text-xl mt-6 mb-3">Colour</h3>
+      <div class="grid grid-cols-4 gap-3 text-sm">
+        <div><div class="swatch" style="background:#141B3C"></div><p class="mt-1 font-bold">Night</p><p class="text-starwhite/70">#141B3C</p></div>
+        <div><div class="swatch" style="background:#FFF8EC"></div><p class="mt-1 font-bold">Cream</p><p class="text-starwhite/70">#FFF8EC</p></div>
+        <div><div class="swatch" style="background:#1E2346"></div><p class="mt-1 font-bold">Ink</p><p class="text-starwhite/70">#1E2346</p></div>
+        <div><div class="swatch" style="background:#FFF4D6"></div><p class="mt-1 font-bold">Starlight</p><p class="text-starwhite/70">#FFF4D6</p></div>
+        <div><div class="swatch" style="background:#FF7A3D"></div><p class="mt-1 font-bold">Rocket</p><p class="text-starwhite/70">#FF7A3D</p></div>
+        <div><div class="swatch" style="background:#FFCF4A"></div><p class="mt-1 font-bold">Moon</p><p class="text-starwhite/70">#FFCF4A</p></div>
+        <div><div class="swatch" style="background:#5ED6B0"></div><p class="mt-1 font-bold">Mint</p><p class="text-starwhite/70">#5ED6B0</p></div>
+        <div><div class="swatch" style="background:#FF9EB5"></div><p class="mt-1 font-bold">Pink</p><p class="text-starwhite/70">#FF9EB5</p></div>
+      </div>
+
+      <h3 class="font-head font-bold text-xl mt-6 mb-2">Type</h3>
+      <p class="font-head font-extrabold text-4xl leading-none">Baloo 2, 36</p>
+      <p class="font-head font-bold text-[1.375rem] mt-1">Answer text, Baloo 2 22</p>
+      <p class="mt-1">Body copy is Nunito at 18px, never smaller.</p>
+
+      <h3 class="font-head font-bold text-xl mt-6 mb-3">Buttons</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div><button class="btn btn-flame w-full" type="button">Check</button><p class="text-sm mt-2 text-starwhite/70">Rest</p></div>
+        <div><button class="btn btn-flame is-pressed w-full" type="button" tabindex="-1">Check</button><p class="text-sm mt-2 text-starwhite/70">Pressed</p></div>
+        <div><button class="btn btn-paper w-full" type="button">Try again</button><p class="text-sm mt-2 text-starwhite/70">Paper</p></div>
+        <div><button class="btn btn-flame w-full" type="button" disabled>Check</button><p class="text-sm mt-2 text-starwhite/70">Waiting for a pick</p></div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
