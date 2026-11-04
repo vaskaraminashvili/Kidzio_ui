@@ -1,6 +1,7 @@
 # Kidzio
 
-A static, mobile-only prototype of a friendly space quiz app for kids aged 7–12.
+A static, mobile-only prototype of a friendly quiz app for kids aged 7–12, with four worlds to choose from:
+Space, Autumn forest, Race cars and Under the sea.
 Plain HTML, Tailwind CSS (CDN) and Alpine.js (CDN). There's no build step and no backend.
 
 ## Run locally
@@ -13,7 +14,9 @@ Open `index.html` in a browser. On a wide screen the app sits in a phone-sized f
 | --- | --- |
 | `index.html` | All three screens (home, quiz, results), the icon sprite and the sky |
 | `styles.css` | Design tokens, components, keyframes and the reduced-motion rules |
-| `app.js` | Quiz logic, the mascot drawing and the sample questions |
+| `app.js` | Quiz logic and the sample questions |
+| `themes/<name>/` | One folder per world: colours, scenery, mascot, words and celebration. See `themes/README.md` |
+| `themes.html` | Preview every world and save one as the default |
 
 ### Game types
 
@@ -27,6 +30,11 @@ Every question in `QUESTIONS` (in `app.js`) has a `type`:
 
 Today's mission (`DAILY`) runs 10 questions, and the first five show all five game types.
 Each subject planet runs that subject's three questions.
+
+### Worlds (themes)
+
+Open `index.html?theme=space`, `?theme=autumn`, `?theme=cars` or `?theme=ocean`, or use `themes.html`.
+Without a `?theme=`, the app uses the world saved on that device, or Space.
 
 ## Deploy on GitHub Pages
 

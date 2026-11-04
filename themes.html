@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#141B3C">
+  <title>Kidzio worlds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Stand-in for the future profile setting: preview a world, or save it as the default. */
+    :root {
+      --page: #141B3C; --on-page: #FFF4D6; --on-page-soft: #E0D8C4;
+      --cream: #FFF8EC; --ink: #1E2346; --ink-soft: #4C5178; --shadow: #0D1330; --focus: #FFCF4A;
+      --flame: linear-gradient(180deg, #FFD24D 0%, #FF9A3C 48%, #F4653A 100%); --flame-deep: #C4511C;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100dvh;
+      background: var(--page); color: var(--on-page);
+      font: 600 1.125rem/1.5 "Nunito", system-ui, sans-serif;
+    }
+    main { max-width: 460px; margin: 0 auto; padding: 32px max(20px, env(safe-area-inset-right, 0px)) 40px max(20px, env(safe-area-inset-left, 0px)); display: grid; gap: 18px; }
+    h1 { font: 800 2.25rem/1.1 "Baloo 2", system-ui, sans-serif; margin: 0; text-wrap: balance; }
+    p { margin: 0; color: var(--on-page-soft); }
+    .world {
+      display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center;
+      padding: 14px 16px 16px; border-radius: 28px;
+      background: var(--cream); color: var(--ink);
+      box-shadow: 0 6px 0 var(--shadow);
+    }
+    .scene { width: 96px; height: 112px; border-radius: 22px; display: grid; place-items: end center; padding-bottom: 6px; }
+    .scene svg { width: 78px; height: auto; display: block; }
+    .world h2 { font: 800 1.5rem/1.1 "Baloo 2", system-ui, sans-serif; margin: 0 0 4px; }
+    .swatches { display: flex; gap: 6px; margin: 0 0 10px; }
+    .swatches span { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--ink); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 56px; padding: 0 18px; border: 0; border-radius: 18px;
+      font: 800 1.125rem "Baloo 2", system-ui, sans-serif; color: var(--ink); text-decoration: none;
+      cursor: pointer; transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+    }
+    .btn:active { transform: translateY(4px); box-shadow: none !important; }
+    .btn-flame { background: var(--flame); box-shadow: 0 4px 0 var(--flame-deep); }
+    .btn-paper { background: #F1E3CA; box-shadow: 0 4px 0 #C8B697; }
+    .badge { display: inline-block; padding: 0 10px; border-radius: 999px; background: var(--ink); color: var(--cream); font-size: 1rem; font-weight: 800; }
+    :focus-visible { outline: 4px solid var(--focus); outline-offset: 4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Pick your world</h1>
+    <p>Every world has the same games and questions. Only the look, the helper and the words change.</p>
+    <div id="worlds" style="display:grid; gap:18px"></div>
+    <p id="saved" role="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const THEMES = ['space', 'autumn', 'cars', 'ocean'];
+    const list = document.getElementById('worlds');
+    const saved = document.getElementById('saved');
+
+    function current() {
+      try { return localStorage.getItem('kidzio-theme') || 'space'; } catch (e) { return 'space'; }
+    }
+
+    // Each theme.js sets window.KIDZIO_THEME; load them one by one and keep a copy of each.
+    function load(id) {
+      return new Promise((resolve) => {
+        const s = document.createElement('script');
+        s.src = `themes/${id}/theme.js`;
+        s.onload = () => resolve(window.KIDZIO_THEME);
+        s.onerror = () => resolve(null);
+        document.head.appendChild(s);
+      });
+    }
+
+    async function render() {
+      const mine = current();
+      for (const id of THEMES) {
+        const t = await load(id);
+        if (!t) continue;
+        const card = document.createElement('section');
+        card.className = 'world';
+        card.setAttribute('aria-label', t.name);
+        card.innerHTML = `
+          <div class="scene" style="background:${t.preview.bg}">${t.mascot}</div>
+          <div>
+            <h2>${t.name} ${id === mine ? '<span class="badge">Saved</span>' : ''}</h2>
+            <div class="swatches" aria-hidden="true">${t.preview.accents.map((c) => `<span style="background:${c}"></span>`).join('')}</div>
+            <div class="actions">
+              <a class="btn btn-flame" href="index.html?theme=${id}">Try it</a>
+              <button class="btn btn-paper" type="button" data-save="${id}">Make it mine</button>
+            </div>
+          </div>`;
+        list.appendChild(card);
+      }
+    }
+
+    list.addEventListener('click', (e) => {
+      const id = e.target.closest('[data-save]')?.dataset.save;
+      if (!id) return;
+      try {
+        localStorage.setItem('kidzio-theme', id);
+        saved.textContent = 'Saved. Kidzio will open in this world next time.';
+      } catch (err) {
+        saved.textContent = 'This browser won’t let Kidzio save. Use “Try it” instead.';
+      }
+      list.innerHTML = '';
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

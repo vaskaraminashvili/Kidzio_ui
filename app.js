@@ -1,14 +1,17 @@
 /* Kidzio — quiz logic and sample data.
-   Everything runs in the browser: one Alpine component drives all screens. */
+   Everything runs in the browser: one Alpine component drives all screens.
+   The look and the words come from the active theme (themes/<name>/theme.js),
+   which sets window.KIDZIO_THEME before this file runs. */
 
-const ACCENTS = ['rocket', 'moon', 'mint', 'pink'];
+const T = window.KIDZIO_THEME;
+const ACCENTS = ['a1', 'a2', 'a3', 'a4'];
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 const SUBJECTS = [
-  { id: 'maths',     name: 'Maths',     accent: 'rocket', icon: 'i-maths' },
-  { id: 'english',   name: 'English',   accent: 'pink',   icon: 'i-english' },
-  { id: 'science',   name: 'Science',   accent: 'mint',   icon: 'i-science' },
-  { id: 'geography', name: 'Geography', accent: 'moon',   icon: 'i-geo' },
+  { id: 'maths',     name: 'Maths',     accent: 'a1', icon: 'i-maths' },
+  { id: 'english',   name: 'English',   accent: 'a4', icon: 'i-english' },
+  { id: 'science',   name: 'Science',   accent: 'a3', icon: 'i-science' },
+  { id: 'geography', name: 'Geography', accent: 'a2', icon: 'i-geo' },
 ];
 
 /* Sample questions. Every question has a `type`:
@@ -143,12 +146,12 @@ const byId = (id) => QUESTIONS.find((q) => q.id === id);
 
 function buildMission(id) {
   if (id === 'daily') {
-    return { id, title: 'Today’s mission', questions: DAILY.map(byId) };
+    return { id, title: T.words.daily, questions: DAILY.map(byId) };
   }
   const subject = SUBJECTS.find((s) => s.id === id);
   return {
     id,
-    title: `${subject.name} planet`,
+    title: T.words.subject(subject.name),
     questions: QUESTIONS.filter((q) => q.subject === id),
   };
 }
@@ -167,41 +170,13 @@ function shuffled(n) {
 const prefersReducedMotion = () =>
   window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* The mascot, Zip: drawn once here and dropped in wherever Zip appears. */
-const MASCOT_SVG = `
-<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false">
-  <g stroke="#1E2346" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-    <rect x="30" y="80" width="60" height="38" rx="12" fill="#D8CBB2"/>
-    <rect x="43" y="112" width="13" height="22" rx="6.5" fill="#FFF8EC"/>
-    <rect x="64" y="112" width="13" height="22" rx="6.5" fill="#FFF8EC"/>
-    <path d="M39 132h20v5a5 5 0 0 1-5 5H44a5 5 0 0 1-5-5z" fill="#FF7A3D"/>
-    <path d="M61 132h20v5a5 5 0 0 1-5 5H66a5 5 0 0 1-5-5z" fill="#FF7A3D"/>
-    <g class="m-arm m-arm-l"><rect x="28" y="84" width="12" height="27" rx="6" fill="#FFF8EC"/><circle cx="34" cy="113" r="7" fill="#FF7A3D"/></g>
-    <g class="m-arm m-arm-r"><rect x="80" y="84" width="12" height="27" rx="6" fill="#FFF8EC"/><circle cx="86" cy="113" r="7" fill="#FF7A3D"/></g>
-    <rect x="36" y="77" width="48" height="42" rx="16" fill="#FFF8EC"/>
-    <rect x="49" y="89" width="22" height="14" rx="5" fill="#2B3670"/>
-    <circle cx="55" cy="96" r="2.4" fill="#FFCF4A" stroke="none"/>
-    <circle cx="65" cy="96" r="2.4" fill="#5ED6B0" stroke="none"/>
-    <g class="m-head">
-      <path d="M60 21V9"/>
-      <circle cx="60" cy="7" r="6" fill="#FF7A3D"/>
-      <circle cx="60" cy="50" r="31" fill="#FFF8EC"/>
-      <ellipse cx="60" cy="52" rx="22" ry="18" fill="#2B3670"/>
-      <g stroke="none">
-        <ellipse cx="51" cy="50" rx="4" ry="5.5" fill="#FFF4D6"/>
-        <ellipse cx="69" cy="50" rx="4" ry="5.5" fill="#FFF4D6"/>
-        <circle cx="45" cy="59" r="3.2" fill="#FF9EB5"/>
-        <circle cx="75" cy="59" r="3.2" fill="#FF9EB5"/>
-      </g>
-      <path d="M53 59q7 6 14 0" fill="none" stroke="#FFF4D6" stroke-width="2.6"/>
-      <path d="M43 41q4-7 11-8" fill="none" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="2.6"/>
-    </g>
-  </g>
-</svg>`;
+/* Drop the theme's own drawings (progress icons, sparkles, badges) into the page. */
+document.getElementById('theme-sprite').innerHTML = T.sprite;
+document.querySelector('meta[name="theme-color"]')?.setAttribute('content', T.themeColor);
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('app', () => ({
-    mascotSvg: MASCOT_SVG,
+    t: T,
 
     /* ---------- profile ---------- */
     kidName: 'Mia',
@@ -316,7 +291,7 @@ document.addEventListener('alpine:init', () => {
         order: q.type === 'match' ? shuffled(q.pairs.length) : [],
       };
       this.feedback = {
-        multiple: 'Tap a planet to choose your answer.',
+        multiple: T.words.pickHint,
         picture: 'Look closely, then tap your answer.',
         truefalse: 'Is it true or false? Tap one.',
         gap: 'Tap a word to drop it into the gap.',
@@ -381,8 +356,8 @@ document.addEventListener('alpine:init', () => {
       const q = this.q;
       if (q.type === 'truefalse') {
         return [
-          { label: 'True',  icon: 'i-thumb-up',   accent: 'mint' },
-          { label: 'False', icon: 'i-thumb-down', accent: 'pink' },
+          { label: 'True',  icon: 'i-thumb-up',   accent: 'good' },
+          { label: 'False', icon: 'i-thumb-down', accent: 'miss' },
         ];
       }
       if (!q.options) return [];
@@ -536,11 +511,11 @@ document.addEventListener('alpine:init', () => {
     },
 
     get resultTitle() {
-      return ['', 'Mission complete!', 'Great flying!', 'Superstar pilot!'][this.stars];
+      return T.words.resultTitles[this.stars];
     },
 
     get resultMessage() {
-      if (this.stars === 3) return 'You nailed it. Zip is doing a space dance!';
+      if (this.stars === 3) return T.words.threeStars;
       if (this.stars === 2) return 'So close to three stars. One more go?';
       return 'Every try makes your brain stronger. Want another go?';
     },

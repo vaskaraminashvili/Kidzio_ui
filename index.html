@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#141B3C">
   <title>Kidzio</title>
-  <meta name="description" content="A friendly space quiz for kids aged 7 to 12.">
+  <meta name="description" content="A friendly quiz for kids aged 7 to 12.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,14 +17,9 @@
       theme: {
         extend: {
           colors: {
-            night: { DEFAULT: '#141B3C', raised: '#1F2853', deep: '#0D1330', line: '#34407A' },
-            cream: { DEFAULT: '#FFF8EC', deep: '#F1E3CA' },
-            ink: { DEFAULT: '#1E2346', soft: '#4C5178' },
-            starwhite: '#FFF4D6',
-            rocket: { DEFAULT: '#FF7A3D', deep: '#C4511C' },
-            moon: { DEFAULT: '#FFCF4A', deep: '#C9941A' },
-            mint: { DEFAULT: '#5ED6B0', deep: '#2C9677' },
-            pink: { DEFAULT: '#FF9EB5', deep: '#D2637F' },
+            onbg: { DEFAULT: 'var(--on-bg)', soft: 'var(--on-bg-soft)' },
+            hi: 'var(--hi-text)',
+            ink: { DEFAULT: 'var(--ink)', soft: 'var(--ink-soft)' },
           },
           fontFamily: {
             head: ['"Baloo 2"', 'system-ui', 'sans-serif'],
@@ -36,6 +31,21 @@
   </script>
 
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Theme loader. Picks the theme from ?theme=…, then from the saved profile
+       setting (localStorage "kidzio-theme"), else Space. Loads its CSS + JS
+       synchronously so they are ready before app.js runs. -->
+  <script>
+    (function () {
+      var themes = ['space', 'autumn', 'cars', 'ocean'];
+      var pick = new URLSearchParams(location.search).get('theme');
+      if (!pick) { try { pick = localStorage.getItem('kidzio-theme'); } catch (e) {} }
+      if (themes.indexOf(pick) < 0) pick = 'space';
+      document.documentElement.setAttribute('data-theme', pick);
+      document.write('<link rel="stylesheet" href="themes/' + pick + '/theme.css">');
+      document.write('<script src="themes/' + pick + '/theme.js"><\/script>');
+    })();
+  </script>
   <script src="app.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js" defer></script>
 </head>
@@ -45,14 +55,13 @@
   <!-- ===================== Icon sprite ===================== -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
-      <path id="spark" d="M0,-10 C1.2,-2.4 2.6,-1.1 10,0 C2.4,1.4 1.3,2.2 0,10.5 C-1.6,2.6 -2.2,1.2 -9.5,0 C-2.4,-1.3 -1.4,-2.1 0,-10Z"/>
       <clipPath id="sat-front"><rect x="-10" y="34" width="84" height="40" transform="rotate(-15 32 34)"/></clipPath>
 
       <symbol id="i-star" viewBox="0 0 64 64">
         <path d="M32 6 39.6 23.5 58.5 24.9 44 37.2 48.4 55.6 32 45.6 15.6 55.6 20 37.2 5.5 24.9 24.4 23.5Z" fill="#FFCF4A" stroke="#1E2346" stroke-width="3" stroke-linejoin="round"/>
       </symbol>
       <symbol id="i-star-empty" viewBox="0 0 64 64">
-        <path d="M32 6 39.6 23.5 58.5 24.9 44 37.2 48.4 55.6 32 45.6 15.6 55.6 20 37.2 5.5 24.9 24.4 23.5Z" fill="#1F2853" stroke="#4A5795" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6 5"/>
+        <path d="M32 6 39.6 23.5 58.5 24.9 44 37.2 48.4 55.6 32 45.6 15.6 55.6 20 37.2 5.5 24.9 24.4 23.5Z" style="fill: var(--bg-raised); stroke: var(--bg-line)" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6 5"/>
       </symbol>
 
       <symbol id="i-saturn" viewBox="0 0 64 64">
@@ -160,40 +169,14 @@
       </symbol>
     </defs>
   </svg>
+  <!-- Filled by the active theme: t-start, t-end, t-traveller, t-spark -->
+  <svg id="theme-sprite" width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"></svg>
 
   <div class="min-h-[100dvh] flex items-center justify-center min-[480px]:py-6">
     <main class="device" x-data="app">
 
-      <!-- Sky: hand-drawn sparkles + quiet planets (decorative) -->
-      <div class="sky" aria-hidden="true">
-        <svg viewBox="0 0 400 860" preserveAspectRatio="xMidYMid slice">
-          <g>
-            <circle cx="360" cy="96" r="30" fill="#253068"/>
-            <circle cx="350" cy="86" r="6" fill="#2E3A78"/>
-            <circle cx="370" cy="108" r="4" fill="#2E3A78"/>
-            <ellipse cx="360" cy="98" rx="50" ry="11" fill="none" stroke="#3B488A" stroke-width="4" stroke-linecap="round" transform="rotate(-14 360 98)" stroke-dasharray="120 18"/>
-          </g>
-          <g>
-            <circle cx="-10" cy="830" r="120" fill="#1C2550"/>
-            <circle cx="40" cy="770" r="14" fill="#212B5C"/>
-            <circle cx="70" cy="830" r="9" fill="#212B5C"/>
-          </g>
-          <g transform="translate(215 26) scale(.8)"><use href="#spark" class="twinkle" fill="#FFF4D6"/></g>
-          <g transform="translate(250 40) scale(.7)"><use href="#spark" class="twinkle d2" fill="#FFE59A"/></g>
-          <g transform="translate(300 220) scale(.7)"><use href="#spark" class="twinkle d1" fill="#FFF4D6"/></g>
-          <g transform="translate(24 300) scale(.7)"><use href="#spark" class="twinkle d3" fill="#FFF4D6"/></g>
-          <g transform="translate(380 420) scale(.7)"><use href="#spark" class="twinkle d2" fill="#FFE59A"/></g>
-          <g transform="translate(140 600) scale(.7)"><use href="#spark" class="twinkle d1" fill="#FFF4D6"/></g>
-          <g transform="translate(340 700) scale(.7)"><use href="#spark" class="twinkle d3" fill="#FFF4D6"/></g>
-          <g fill="#FFF4D6" opacity=".7">
-            <circle cx="120" cy="30" r="1.8"/><circle cx="190" cy="120" r="1.4"/>
-            <circle cx="80" cy="180" r="1.6"/><circle cx="220" cy="260" r="1.2"/>
-            <circle cx="370" cy="300" r="1.6"/><circle cx="60" cy="470" r="1.3"/>
-            <circle cx="300" cy="560" r="1.8"/><circle cx="210" cy="780" r="1.4"/>
-            <circle cx="380" cy="820" r="1.6"/><circle cx="16" cy="640" r="1.2"/>
-          </g>
-        </svg>
-      </div>
+      <!-- Scenery: drawn by the active theme (decorative) -->
+      <div class="sky" aria-hidden="true" x-html="t.scenery"></div>
 
       <!-- ===================== HOME ===================== -->
       <section class="screen" data-screen="home" aria-label="Home"
@@ -203,17 +186,17 @@
         <div class="screen-body pt-7 grid content-start gap-5">
           <div class="home-hero">
             <div>
-              <p class="font-head font-bold text-xl text-starwhite/80" x-text="greeting + ','"></p>
-              <h1 data-focus tabindex="-1" class="font-head font-extrabold text-[2.75rem] leading-none text-starwhite" x-text="kidName + '!'"></h1>
-              <p class="mt-2 font-semibold text-starwhite/85">Where shall we fly today?</p>
+              <p class="font-head font-bold text-xl text-onbg-soft" x-text="greeting + ','"></p>
+              <h1 data-focus tabindex="-1" class="font-head font-extrabold text-[2.75rem] leading-none text-onbg" x-text="kidName + '!'"></h1>
+              <p class="mt-2 font-semibold text-onbg-soft" x-text="t.words.tagline"></p>
             </div>
-            <div class="mascot is-wave" x-html="mascotSvg"></div>
+            <div class="mascot is-wave" x-html="t.mascot"></div>
           </div>
 
           <div class="streak" role="group" :aria-label="`${streak} day streak. ${weekLabel}`">
             <div aria-hidden="true">
-              <p class="font-head font-extrabold text-[1.75rem] leading-none text-moon" x-text="`${streak} days`"></p>
-              <p class="font-bold text-starwhite/80">in a row</p>
+              <p class="font-head font-extrabold text-[1.75rem] leading-none text-hi" x-text="`${streak} days`"></p>
+              <p class="font-bold text-onbg-soft">in a row</p>
             </div>
             <div class="streak-days" aria-hidden="true">
               <template x-for="(d, i) in week" :key="i">
@@ -225,19 +208,13 @@
             </div>
           </div>
 
-          <h2 class="font-head font-extrabold text-2xl text-starwhite -mb-1">Pick a planet</h2>
+          <h2 class="font-head font-extrabold text-2xl text-onbg -mb-1" x-text="t.words.pick"></h2>
           <div class="subject-grid">
             <template x-for="s in subjects" :key="s.id">
               <button type="button" class="subject-tile" :data-accent="s.accent"
-                      :aria-label="`${s.name} planet, ${subjectCount(s.id)} questions`"
+                      :aria-label="`${t.words.subject(s.name)}, ${subjectCount(s.id)} questions`"
                       @click="startMission(s.id)">
-                <span class="subject-planet" aria-hidden="true">
-                  <svg viewBox="0 0 76 62">
-                    <ellipse class="ring" cx="38" cy="31" rx="37" ry="9" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="50 9 80 8"/>
-                    <circle cx="38" cy="31" r="27" :fill="`var(--${s.accent})`" stroke="#1E2346" stroke-width="2.6"/>
-                    <use :href="'#' + s.icon" x="21" y="14" width="34" height="34"></use>
-                  </svg>
-                </span>
+                <span class="subject-planet" aria-hidden="true" x-html="t.tile(s.accent, s.icon)"></span>
                 <span class="subject-name" aria-hidden="true" x-text="s.name"></span>
                 <span class="subject-meta" aria-hidden="true" x-text="`${subjectCount(s.id)} questions`"></span>
               </button>
@@ -246,8 +223,8 @@
         </div>
 
         <div class="screen-foot">
-          <button type="button" class="btn btn-flame w-full" @click="startMission('daily')">Start today’s mission</button>
-          <p class="text-center font-semibold text-starwhite/80 -mt-1">10 questions with all 5 games</p>
+          <button type="button" class="btn btn-flame w-full" @click="startMission('daily')" x-text="t.words.start"></button>
+          <p class="text-center font-semibold text-onbg-soft -mt-1">10 questions with all 5 games</p>
         </div>
       </section>
 
@@ -258,18 +235,18 @@
                x-transition:leave="screen-anim-out" x-transition:leave-start="screen-to" x-transition:leave-end="screen-out">
 
         <div class="quiz-top">
-          <button type="button" class="btn btn-paper !min-h-[56px] !w-[56px] !p-0" aria-label="Leave mission and go home" @click="leaveQuiz()">
+          <button type="button" class="btn btn-paper !min-h-[56px] !w-[56px] !p-0" :aria-label="t.words.leave" @click="leaveQuiz()">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
           </button>
-          <div class="flight" role="progressbar" aria-label="Mission progress"
+          <div class="flight" role="progressbar" :aria-label="t.words.progress"
                aria-valuemin="0" :aria-valuemax="total" :aria-valuenow="qIndex + (checked ? 1 : 0)"
                :aria-valuetext="`${qIndex + (checked ? 1 : 0)} of ${total} questions done`">
             <div class="flight-track"></div>
             <div class="flight-trail" :style="`width: calc((100% - 44px) * ${progress})`"></div>
-            <svg class="flight-end earth" aria-hidden="true"><use href="#i-earth"></use></svg>
-            <svg class="flight-end moon" aria-hidden="true"><use href="#i-moon"></use></svg>
-            <div class="flight-rocket" aria-hidden="true" :style="`left: calc(22px + (100% - 44px) * ${progress})`">
-              <svg><use href="#i-rocket"></use></svg>
+            <svg class="flight-end start" aria-hidden="true"><use href="#t-start"></use></svg>
+            <svg class="flight-end end" aria-hidden="true"><use href="#t-end"></use></svg>
+            <div class="flight-traveller" aria-hidden="true" :style="`left: calc(22px + (100% - 44px) * ${progress}); --progress: ${progress}`">
+              <svg><use href="#t-traveller"></use></svg>
             </div>
           </div>
         </div>
@@ -315,12 +292,7 @@
                           </template>
                           <template x-if="!opt.icon">
                             <span class="planet-badge">
-                              <svg viewBox="0 0 58 46">
-                                <ellipse class="ring" cx="29" cy="23" rx="28" ry="8" fill="none" stroke="#1E2346" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="40 8 60 10"/>
-                                <circle cx="29" cy="23" r="20" :fill="`var(--${opt.accent})`" stroke="#1E2346" stroke-width="2.6"/>
-                                <circle cx="19" cy="16" r="3" :fill="`var(--${opt.accent}-deep)`" opacity=".35"/>
-                                <circle cx="40" cy="31" r="2.2" :fill="`var(--${opt.accent}-deep)`" opacity=".35"/>
-                              </svg>
+                              <span class="badge-art" x-html="t.badge(opt.accent)"></span>
                               <span class="letter" x-text="letter(i)"></span>
                             </span>
                           </template>
@@ -341,11 +313,11 @@
                       </span>
                       <template x-if="checked && i === answerIndex && correct">
                         <span class="burst" aria-hidden="true">
-                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
-                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
-                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
-                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
-                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#t-spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#t-spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#t-spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#t-spark" fill="currentColor"></use></svg></span>
+                          <span><svg viewBox="-11 -11 22 22" width="18" height="18"><use href="#t-spark" fill="currentColor"></use></svg></span>
                         </span>
                       </template>
                     </button>
@@ -411,7 +383,7 @@
 
         <div class="screen-foot">
           <div class="feedback">
-            <div class="mascot" :class="'is-' + mood" x-html="mascotSvg"></div>
+            <div class="mascot" :class="'is-' + mood" x-html="t.mascot"></div>
             <p role="status" aria-live="polite" x-text="feedback"></p>
           </div>
           <button type="button" class="btn btn-flame w-full" :disabled="!canCheck" @click="check()" x-text="buttonLabel">Check</button>
@@ -431,7 +403,7 @@
         <div class="screen-body">
           <template x-if="screen === 'results'">
             <div class="grid content-start gap-5 text-center pt-2">
-              <h1 data-focus tabindex="-1" class="font-head font-extrabold text-[2.25rem] leading-tight text-starwhite" x-text="resultTitle"></h1>
+              <h1 data-focus tabindex="-1" class="font-head font-extrabold text-[2.25rem] leading-tight text-onbg" x-text="resultTitle"></h1>
               <div class="result-stars" role="img" :aria-label="`${stars} out of 3 stars`">
                 <template x-for="n in 3" :key="n">
                   <span class="result-star" :class="n <= stars ? 'is-on' : 'is-off'">
@@ -440,34 +412,26 @@
                 </template>
               </div>
               <div class="result-card mt-16">
-                <div class="mascot" :class="'is-' + resultMood" x-html="mascotSvg"></div>
+                <div class="mascot" :class="'is-' + resultMood" x-html="t.mascot"></div>
                 <p class="result-score"><span x-text="score"></span> of <span x-text="total"></span> right</p>
                 <p class="font-semibold text-ink-soft" x-text="resultMessage"></p>
               </div>
-              <p class="font-bold text-starwhite/85">
-                Your streak is <span class="text-moon" x-text="`${streak} days`"></span> in a row.
+              <p class="font-bold text-onbg-soft">
+                Your streak is <span class="text-hi" x-text="`${streak} days`"></span> in a row.
               </p>
             </div>
           </template>
         </div>
         <div class="screen-foot">
           <button type="button" class="btn btn-paper w-full" @click="startMission(mission.id)">Try again</button>
-          <button type="button" class="btn btn-flame w-full" @click="startMission(nextMissionId)">Next mission</button>
-          <p class="text-center font-semibold text-starwhite/80 -mt-1">Up next: <span x-text="nextMissionName"></span></p>
+          <button type="button" class="btn btn-flame w-full" @click="startMission(nextMissionId)" x-text="t.words.next"></button>
+          <p class="text-center font-semibold text-onbg-soft -mt-1">Up next: <span x-text="nextMissionName"></span></p>
         </div>
       </section>
 
-      <!-- ===================== Rocket blast ===================== -->
+      <!-- ===================== Celebration (drawn by the theme) ===================== -->
       <template x-if="blasting">
-        <div class="blast" aria-hidden="true">
-          <div class="blast-rocket"><svg viewBox="0 0 64 64"><use href="#i-rocket"></use></svg></div>
-          <span class="blast-star" style="left:19%;top:70%;animation-delay:250ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
-          <span class="blast-star" style="left:34%;top:62%;animation-delay:380ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
-          <span class="blast-star" style="left:44%;top:50%;animation-delay:450ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
-          <span class="blast-star" style="left:60%;top:41%;animation-delay:580ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
-          <span class="blast-star" style="left:68%;top:31%;animation-delay:640ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
-          <span class="blast-star" style="left:86%;top:20%;animation-delay:780ms"><svg viewBox="0 0 64 64"><use href="#i-star"></use></svg></span>
-        </div>
+        <div class="blast" aria-hidden="true" x-html="t.celebration"></div>
       </template>
     </main>
   </div>
