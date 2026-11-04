@@ -118,7 +118,7 @@ h1, h2, h3, .font-head { font-family: var(--font-head); line-height: 1.15; }
   }
 }
 
-/* ---------- 4. Sky (stars + planets) ------------------------------------ */
+/* ---------- 4. Scene layer (each theme draws its own) ------------------ */
 .sky { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .sky > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
@@ -173,7 +173,7 @@ h1, h2, h3, .font-head { font-family: var(--font-head); line-height: 1.15; }
 }
 .btn:disabled::before { display: none; }
 
-/* ---------- 6. Multiple-choice planet cards ----------------------------- */
+/* ---------- 6. Answer cards (multiple choice, picture, true/false) ------ */
 .answer-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -467,7 +467,7 @@ h1, h2, h3, .font-head { font-family: var(--font-head); line-height: 1.15; }
 }
 .feedback .mascot { width: 56px; flex: none; }
 
-/* ---------- 10. Mascot (Zip) ------------------------------------------- */
+/* ---------- 10. Mascot moods (every theme's mascot) -------------------- */
 .mascot svg { width: 100%; height: auto; display: block; overflow: visible; }
 .mascot .m-arm, .mascot .m-head { transition: transform 360ms var(--ease-bounce); }
 .mascot .m-arm-l { transform-origin: 34px 88px; transform: rotate(14deg); }

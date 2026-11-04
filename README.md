@@ -17,6 +17,7 @@ Open `index.html` in a browser. On a wide screen the app sits in a phone-sized f
 | `app.js` | Quiz logic and the sample questions |
 | `themes/<name>/` | One folder per world: colours, scenery, mascot, words and celebration. See `themes/README.md` |
 | `themes.html` | Preview every world and save one as the default |
+| `AGENTS.md`, `DESIGN.md` | Guide for AI assistants (and people) adding UI so it fits every world |
 
 ### Game types
 
